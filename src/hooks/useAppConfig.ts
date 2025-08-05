@@ -25,16 +25,19 @@ export const useAppConfig = () => {
       try {
         // Load apps configuration
         const storedApps = localStorage.getItem(CONFIG_STORAGE_KEYS.APPS);
+        console.log('Loading apps from localStorage:', storedApps);
         if (storedApps) {
           const parsedApps = JSON.parse(storedApps);
           if (Array.isArray(parsedApps)) {
             // Validate each app configuration
             const validApps = parsedApps.filter(app => ConfigManager.validateAppConfig(app));
+            console.log('Valid apps found:', validApps);
             setApps(validApps.length > 0 ? validApps : defaultApps);
           } else {
             setApps(defaultApps);
           }
         } else {
+          console.log('No stored apps found, using defaults');
           setApps(defaultApps);
         }
 
@@ -76,6 +79,7 @@ export const useAppConfig = () => {
         ...app,
         lastModified: new Date().toISOString()
       }));
+      console.log('Saving apps to localStorage:', appsWithTimestamp);
       localStorage.setItem(CONFIG_STORAGE_KEYS.APPS, JSON.stringify(appsWithTimestamp));
     }
   }, [apps, isLoading]);
