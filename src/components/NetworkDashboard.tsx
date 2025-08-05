@@ -13,7 +13,8 @@ const DASHBOARD_SETTINGS_KEY = "network-dashboard-settings";
 
 const defaultSettings = {
   title: "Network Dashboard",
-  subtitle: "Home Network Services"
+  subtitle: "Home Network Services",
+  footer: "Click apps to launch • Click Edit to customize dashboard"
 };
 
 const NetworkDashboard = () => {
@@ -25,8 +26,10 @@ const NetworkDashboard = () => {
   const [dashboardSettings, setDashboardSettings] = useState(defaultSettings);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
+  const [isEditingFooter, setIsEditingFooter] = useState(false);
   const [tempTitle, setTempTitle] = useState("");
   const [tempSubtitle, setTempSubtitle] = useState("");
+  const [tempFooter, setTempFooter] = useState("");
   
   const { apps, addApp, updateApp, deleteApp, resetToDefaults } = useAppsData();
   const { toast } = useToast();
@@ -65,6 +68,11 @@ const NetworkDashboard = () => {
     setIsEditingSubtitle(true);
   };
 
+  const handleStartEditFooter = () => {
+    setTempFooter(dashboardSettings.footer);
+    setIsEditingFooter(true);
+  };
+
   const handleSaveTitle = () => {
     if (tempTitle.trim()) {
       setDashboardSettings(prev => ({ ...prev, title: tempTitle.trim() }));
@@ -87,6 +95,17 @@ const NetworkDashboard = () => {
     setIsEditingSubtitle(false);
   };
 
+  const handleSaveFooter = () => {
+    if (tempFooter.trim()) {
+      setDashboardSettings(prev => ({ ...prev, footer: tempFooter.trim() }));
+      toast({
+        title: "Footer updated",
+        description: "Dashboard footer saved successfully", 
+      });
+    }
+    setIsEditingFooter(false);
+  };
+
   const handleCancelTitleEdit = () => {
     setIsEditingTitle(false);
     setTempTitle("");
@@ -95,6 +114,11 @@ const NetworkDashboard = () => {
   const handleCancelSubtitleEdit = () => {
     setIsEditingSubtitle(false);
     setTempSubtitle("");
+  };
+
+  const handleCancelFooterEdit = () => {
+    setIsEditingFooter(false);
+    setTempFooter("");
   };
 
   const handleAppLaunch = (url: string) => {
@@ -135,9 +159,10 @@ const NetworkDashboard = () => {
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
-    // Cancel any ongoing title/subtitle edits when toggling mode
+    // Cancel any ongoing title/subtitle/footer edits when toggling mode
     setIsEditingTitle(false);
     setIsEditingSubtitle(false);
+    setIsEditingFooter(false);
   };
 
   const handleResetApps = () => {
@@ -327,12 +352,43 @@ const NetworkDashboard = () => {
 
           {/* Footer info */}
           <footer className="mt-16 text-center">
-            <p className="text-sm text-muted-foreground">
-              {isEditMode 
-                ? "Edit mode: Click apps to modify • Click title/subtitle to customize • Use Reset All to restore defaults" 
-                : "Click apps to launch • Click Edit to customize dashboard"
-              }
-            </p>
+            {/* Editable Footer */}
+            {isEditMode && isEditingFooter ? (
+              <div className="flex items-center justify-center gap-2">
+                <Input
+                  value={tempFooter}
+                  onChange={(e) => setTempFooter(e.target.value)}
+                  className="text-sm bg-transparent border-primary/50 focus:border-primary max-w-md"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveFooter();
+                    if (e.key === 'Escape') handleCancelFooterEdit();
+                  }}
+                  autoFocus
+                />
+                <Button size="sm" variant="ghost" onClick={handleSaveFooter}>
+                  <Check className="h-4 w-4 text-accent" />
+                </Button>
+                <Button size="sm" variant="ghost" onClick={handleCancelFooterEdit}>
+                  <X className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            ) : (
+              <p 
+                className={cn(
+                  "text-sm text-muted-foreground",
+                  isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                )}
+                onClick={isEditMode ? handleStartEditFooter : undefined}
+              >
+                {isEditMode 
+                  ? "Edit mode: Click apps to modify • Click title/subtitle/footer to customize • Use Reset All to restore defaults"
+                  : dashboardSettings.footer
+                }
+                {isEditMode && (
+                  <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
+                )}
+              </p>
+            )}
           </footer>
         </main>
 
