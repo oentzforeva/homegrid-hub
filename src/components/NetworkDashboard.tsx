@@ -21,6 +21,7 @@ const defaultSettings = {
 };
 
 const NetworkDashboard = () => {
+  console.log("NetworkDashboard component is rendering");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
