@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X } from "lucide-react";
+import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import AppCard from "./AppCard";
@@ -14,7 +15,8 @@ const DASHBOARD_SETTINGS_KEY = "network-dashboard-settings";
 const defaultSettings = {
   title: "Network Dashboard",
   subtitle: "Home Network Services",
-  footer: "Click apps to launch • Click Edit to customize dashboard"
+  footer: "Click apps to launch • Click Edit to customize dashboard",
+  networkCheckEnabled: true
 };
 
 const NetworkDashboard = () => {
@@ -100,6 +102,8 @@ const NetworkDashboard = () => {
 
   // Set up periodic connectivity checking (every 5 minutes)
   useEffect(() => {
+    if (!dashboardSettings.networkCheckEnabled) return;
+    
     // Initial check
     checkConnectivity();
     checkAllAppsConnectivity();
@@ -112,7 +116,7 @@ const NetworkDashboard = () => {
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [apps]); // Re-run when apps change
+  }, [apps, dashboardSettings.networkCheckEnabled]); // Re-run when apps or network check setting changes
 
   // Load dashboard settings from localStorage
   useEffect(() => {
@@ -256,6 +260,14 @@ const NetworkDashboard = () => {
     }
   };
 
+  const toggleNetworkCheck = (enabled: boolean) => {
+    setDashboardSettings(prev => ({ ...prev, networkCheckEnabled: enabled }));
+    toast({
+      title: enabled ? "Network monitoring enabled" : "Network monitoring disabled",
+      description: enabled ? "Apps will show connectivity status" : "Network status checks paused",
+    });
+  };
+
   const currentTime = new Date().toLocaleTimeString([], { 
     hour: '2-digit', 
     minute: '2-digit',
@@ -346,24 +358,26 @@ const NetworkDashboard = () => {
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Activity 
-                    className={cn(
-                      "h-4 w-4", 
-                      isOnline 
-                        ? "text-green-500 animate-pulse" 
-                        : "text-red-500 animate-[blink_1s_linear_infinite]"
-                    )} 
-                  />
-                  <span className={isOnline ? "text-green-500" : "text-red-500"}>
-                    {isOnline ? "Online" : "Offline"}
-                  </span>
-                  {lastPingTime && isOnline && (
-                    <span className="text-xs text-muted-foreground/70">
-                      • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {dashboardSettings.networkCheckEnabled && (
+                  <div className="flex items-center gap-2">
+                    <Activity 
+                      className={cn(
+                        "h-4 w-4", 
+                        isOnline 
+                          ? "text-green-500 animate-pulse" 
+                          : "text-red-500 animate-[blink_1s_linear_infinite]"
+                      )} 
+                    />
+                    <span className={isOnline ? "text-green-500" : "text-red-500"}>
+                      {isOnline ? "Online" : "Offline"}
                     </span>
-                  )}
-                </div>
+                    {lastPingTime && isOnline && (
+                      <span className="text-xs text-muted-foreground/70">
+                        • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="font-mono">
                   {currentTime}
                 </div>
@@ -372,6 +386,14 @@ const NetworkDashboard = () => {
               <div className="flex items-center gap-2">
                 {isEditMode && (
                   <>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                      <Wifi className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Network Check</span>
+                      <Switch 
+                        checked={dashboardSettings.networkCheckEnabled}
+                        onCheckedChange={toggleNetworkCheck}
+                      />
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
@@ -437,7 +459,7 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
-                isOnline={appStatuses[app.id]}
+                isOnline={dashboardSettings.networkCheckEnabled ? appStatuses[app.id] : undefined}
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
