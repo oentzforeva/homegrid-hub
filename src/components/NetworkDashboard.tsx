@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -35,9 +35,12 @@ const NetworkDashboard = () => {
     updateApp, 
     deleteApp, 
     resetAllToDefaults,
-    updateDashboardConfig
+    updateDashboardConfig,
+    exportConfiguration,
+    importConfiguration
   } = useAppConfig();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Network connectivity check function
   const checkConnectivity = async () => {
@@ -248,6 +251,74 @@ const NetworkDashboard = () => {
     });
   };
 
+  const handleExportConfig = () => {
+    try {
+      const configJson = exportConfiguration();
+      const blob = new Blob([configJson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `dashboard-config-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Configuration exported",
+        description: "Dashboard configuration downloaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "Failed to export configuration",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleImportConfig = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonString = e.target?.result as string;
+        const success = importConfiguration(jsonString);
+        
+        if (success) {
+          toast({
+            title: "Configuration imported",
+            description: "Dashboard configuration loaded successfully",
+          });
+        } else {
+          toast({
+            title: "Import failed",
+            description: "Invalid configuration file format",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Import failed",
+          description: "Failed to read configuration file",
+          variant: "destructive"
+        });
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset the input so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const currentTime = new Date().toLocaleTimeString([], { 
     hour: '2-digit', 
     minute: '2-digit',
@@ -377,6 +448,24 @@ const NetworkDashboard = () => {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={handleExportConfig}
+                      className="flex items-center gap-2"
+                    >
+                      <Download className="h-4 w-4" />
+                      Export
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleImportConfig}
+                      className="flex items-center gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Import
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setShowAddDialog(true)}
                       className="flex items-center gap-2"
                     >
@@ -488,6 +577,15 @@ const NetworkDashboard = () => {
             )}
           </footer>
         </main>
+
+        {/* Hidden file input for import */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          accept=".json"
+          style={{ display: 'none' }}
+        />
 
         {/* Dialogs */}
         <EditAppDialog
