@@ -1,26 +1,47 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Edit3, ExternalLink } from "lucide-react";
 
 interface AppCardProps {
   name: string;
   icon: string;
   description: string;
   accentColor: string;
+  url?: string;
   onClick?: () => void;
+  onEdit?: () => void;
+  onLaunch?: () => void;
   isSelected?: boolean;
+  isEditMode?: boolean;
 }
 
-const AppCard = ({ name, icon, description, accentColor, onClick, isSelected = false }: AppCardProps) => {
+const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isSelected = false, isEditMode = false }: AppCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleClick = () => {
+    if (isEditMode && onEdit) {
+      onEdit();
+    } else if (!isEditMode && onClick) {
+      onClick();
+    }
+  };
+
+  const handleLaunch = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (url && onLaunch) {
+      onLaunch();
+    }
+  };
 
   return (
     <div
       className={cn(
-        "relative group cursor-pointer select-none",
+        "relative group select-none",
         "transition-all duration-300 ease-smooth",
-        "transform-gpu will-change-transform"
+        "transform-gpu will-change-transform",
+        !isEditMode && "cursor-pointer"
       )}
-      onClick={onClick}
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -75,8 +96,32 @@ const AppCard = ({ name, icon, description, accentColor, onClick, isSelected = f
           </p>
         </div>
 
+        {/* Action buttons */}
+        <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {isEditMode && onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="p-2 bg-primary/20 hover:bg-primary/30 rounded-lg backdrop-blur-sm transition-colors"
+            >
+              <Edit3 className="h-3 w-3 text-primary" />
+            </button>
+          )}
+          
+          {!isEditMode && url && onLaunch && (
+            <button
+              onClick={handleLaunch}
+              className="p-2 bg-accent/20 hover:bg-accent/30 rounded-lg backdrop-blur-sm transition-colors"
+            >
+              <ExternalLink className="h-3 w-3 text-accent" />
+            </button>
+          )}
+        </div>
+
         {/* Selection indicator */}
-        {isSelected && (
+        {!isEditMode && isSelected && (
           <div className="absolute top-4 right-4 w-3 h-3 bg-primary rounded-full animate-pulse" />
         )}
       </div>
