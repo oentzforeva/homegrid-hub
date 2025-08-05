@@ -22,6 +22,10 @@ const NetworkDashboard = () => {
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   
+  // Network status state
+  const [isOnline, setIsOnline] = useState(true);
+  const [lastPingTime, setLastPingTime] = useState<Date | null>(null);
+  
   // Dashboard settings state
   const [dashboardSettings, setDashboardSettings] = useState(defaultSettings);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -33,6 +37,40 @@ const NetworkDashboard = () => {
   
   const { apps, addApp, updateApp, deleteApp, resetToDefaults } = useAppsData();
   const { toast } = useToast();
+
+  // Network connectivity check function
+  const checkConnectivity = async () => {
+    try {
+      // Use a reliable endpoint as a proxy for network connectivity
+      // We'll use Google's DNS-over-HTTPS API as it's fast and reliable
+      const response = await fetch('https://dns.google/resolve?name=google.com&type=A', {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000), // 5 second timeout
+      });
+      
+      if (response.ok) {
+        setIsOnline(true);
+        setLastPingTime(new Date());
+      } else {
+        setIsOnline(false);
+      }
+    } catch (error) {
+      setIsOnline(false);
+      console.warn('Network connectivity check failed:', error);
+    }
+  };
+
+  // Set up periodic connectivity checking (every 5 minutes)
+  useEffect(() => {
+    // Initial check
+    checkConnectivity();
+    
+    // Set up interval for every 5 minutes (300,000ms)
+    const interval = setInterval(checkConnectivity, 5 * 60 * 1000);
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   // Load dashboard settings from localStorage
   useEffect(() => {
@@ -267,8 +305,22 @@ const NetworkDashboard = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-accent animate-pulse" />
-                  <span>Online</span>
+                  <Activity 
+                    className={cn(
+                      "h-4 w-4", 
+                      isOnline 
+                        ? "text-green-500 animate-pulse" 
+                        : "text-red-500 animate-[blink_1s_linear_infinite]"
+                    )} 
+                  />
+                  <span className={isOnline ? "text-green-500" : "text-red-500"}>
+                    {isOnline ? "Online" : "Offline"}
+                  </span>
+                  {lastPingTime && isOnline && (
+                    <span className="text-xs text-muted-foreground/70">
+                      • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
                 </div>
                 <div className="font-mono">
                   {currentTime}
