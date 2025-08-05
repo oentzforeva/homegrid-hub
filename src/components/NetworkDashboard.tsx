@@ -1,25 +1,100 @@
-import { useState } from "react";
-import { Server, Activity, Edit, Plus, RotateCcw, Save } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import AppCard from "./AppCard";
 import EditAppDialog from "./EditAppDialog";
 import AddAppDialog from "./AddAppDialog";
 import { useAppsData, App } from "@/hooks/useAppsData";
+
+const DASHBOARD_SETTINGS_KEY = "network-dashboard-settings";
+
+const defaultSettings = {
+  title: "Network Dashboard",
+  subtitle: "Home Network Services"
+};
 
 const NetworkDashboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   
+  // Dashboard settings state
+  const [dashboardSettings, setDashboardSettings] = useState(defaultSettings);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
+  const [tempTitle, setTempTitle] = useState("");
+  const [tempSubtitle, setTempSubtitle] = useState("");
+  
   const { apps, addApp, updateApp, deleteApp, resetToDefaults } = useAppsData();
   const { toast } = useToast();
+
+  // Load dashboard settings from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(DASHBOARD_SETTINGS_KEY);
+    if (stored) {
+      try {
+        setDashboardSettings(JSON.parse(stored));
+      } catch (error) {
+        console.error("Failed to parse dashboard settings:", error);
+      }
+    }
+  }, []);
+
+  // Save dashboard settings to localStorage
+  useEffect(() => {
+    localStorage.setItem(DASHBOARD_SETTINGS_KEY, JSON.stringify(dashboardSettings));
+  }, [dashboardSettings]);
 
   const handleAppClick = (app: App) => {
     if (isEditMode) return;
     
     // Open the app URL directly
     handleAppLaunch(app.url);
+  };
+
+  const handleStartEditTitle = () => {
+    setTempTitle(dashboardSettings.title);
+    setIsEditingTitle(true);
+  };
+
+  const handleStartEditSubtitle = () => {
+    setTempSubtitle(dashboardSettings.subtitle);
+    setIsEditingSubtitle(true);
+  };
+
+  const handleSaveTitle = () => {
+    if (tempTitle.trim()) {
+      setDashboardSettings(prev => ({ ...prev, title: tempTitle.trim() }));
+      toast({
+        title: "Title updated",
+        description: "Dashboard title saved successfully",
+      });
+    }
+    setIsEditingTitle(false);
+  };
+
+  const handleSaveSubtitle = () => {
+    if (tempSubtitle.trim()) {
+      setDashboardSettings(prev => ({ ...prev, subtitle: tempSubtitle.trim() }));
+      toast({
+        title: "Subtitle updated", 
+        description: "Dashboard subtitle saved successfully",
+      });
+    }
+    setIsEditingSubtitle(false);
+  };
+
+  const handleCancelTitleEdit = () => {
+    setIsEditingTitle(false);
+    setTempTitle("");
+  };
+
+  const handleCancelSubtitleEdit = () => {
+    setIsEditingSubtitle(false);
+    setTempSubtitle("");
   };
 
   const handleAppLaunch = (url: string) => {
@@ -60,14 +135,18 @@ const NetworkDashboard = () => {
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
+    // Cancel any ongoing title/subtitle edits when toggling mode
+    setIsEditingTitle(false);
+    setIsEditingSubtitle(false);
   };
 
   const handleResetApps = () => {
-    if (confirm("Reset all apps to defaults? This will remove any custom apps you've added.")) {
+    if (confirm("Reset dashboard to defaults? This will remove custom apps and reset title/subtitle.")) {
       resetToDefaults();
+      setDashboardSettings(defaultSettings);
       toast({
-        title: "Apps reset",
-        description: "Dashboard reset to default apps",
+        title: "Dashboard reset",
+        description: "Dashboard reset to defaults",
       });
     }
   };
@@ -88,12 +167,75 @@ const NetworkDashboard = () => {
                 <Server className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">
-                  Network Dashboard
-                </h1>
-                <p className="text-muted-foreground">
-                  Home Network Services
-                </p>
+                {/* Editable Title */}
+                {isEditMode && isEditingTitle ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={tempTitle}
+                      onChange={(e) => setTempTitle(e.target.value)}
+                      className="text-3xl font-bold bg-transparent border-primary/50 focus:border-primary"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveTitle();
+                        if (e.key === 'Escape') handleCancelTitleEdit();
+                      }}
+                      autoFocus
+                    />
+                    <Button size="sm" variant="ghost" onClick={handleSaveTitle}>
+                      <Check className="h-4 w-4 text-accent" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={handleCancelTitleEdit}>
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ) : (
+                  <h1 
+                    className={cn(
+                      "text-3xl font-bold text-foreground",
+                      isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                    )}
+                    onClick={isEditMode ? handleStartEditTitle : undefined}
+                  >
+                    {dashboardSettings.title}
+                    {isEditMode && (
+                      <Edit className="inline ml-2 h-5 w-5 text-muted-foreground" />
+                    )}
+                  </h1>
+                )}
+
+                {/* Editable Subtitle */}
+                {isEditMode && isEditingSubtitle ? (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      value={tempSubtitle}
+                      onChange={(e) => setTempSubtitle(e.target.value)}
+                      className="text-base bg-transparent border-primary/50 focus:border-primary"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveSubtitle();
+                        if (e.key === 'Escape') handleCancelSubtitleEdit();
+                      }}
+                      autoFocus
+                    />
+                    <Button size="sm" variant="ghost" onClick={handleSaveSubtitle}>
+                      <Check className="h-4 w-4 text-accent" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={handleCancelSubtitleEdit}>
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ) : (
+                  <p 
+                    className={cn(
+                      "text-muted-foreground",
+                      isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                    )}
+                    onClick={isEditMode ? handleStartEditSubtitle : undefined}
+                  >
+                    {dashboardSettings.subtitle}
+                    {isEditMode && (
+                      <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
+                    )}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -127,7 +269,7 @@ const NetworkDashboard = () => {
                       className="flex items-center gap-2"
                     >
                       <RotateCcw className="h-4 w-4" />
-                      Reset
+                      Reset All
                     </Button>
                   </>
                 )}
@@ -158,7 +300,7 @@ const NetworkDashboard = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
               <Edit className="w-4 h-4 text-accent" />
               <span className="text-sm text-accent font-medium">
-                Edit Mode - Click apps to modify, hover for actions
+                Edit Mode - Click apps to modify • Click title/subtitle to edit
               </span>
             </div>
           )}
@@ -187,8 +329,8 @@ const NetworkDashboard = () => {
           <footer className="mt-16 text-center">
             <p className="text-sm text-muted-foreground">
               {isEditMode 
-                ? "Edit mode: Click apps to modify • Hover for action buttons" 
-                : "Click apps to launch • Click Edit to customize apps"
+                ? "Edit mode: Click apps to modify • Click title/subtitle to customize • Use Reset All to restore defaults" 
+                : "Click apps to launch • Click Edit to customize dashboard"
               }
             </p>
           </footer>
