@@ -11,11 +11,10 @@ interface AppCardProps {
   onClick?: () => void;
   onEdit?: () => void;
   onLaunch?: () => void;
-  isSelected?: boolean;
   isEditMode?: boolean;
 }
 
-const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isSelected = false, isEditMode = false }: AppCardProps) => {
+const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isEditMode = false }: AppCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
@@ -36,10 +35,9 @@ const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, o
   return (
     <div
       className={cn(
-        "relative group select-none",
+        "relative group select-none cursor-pointer",
         "transition-all duration-300 ease-smooth",
-        "transform-gpu will-change-transform",
-        !isEditMode && "cursor-pointer"
+        "transform-gpu will-change-transform"
       )}
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
@@ -51,8 +49,7 @@ const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, o
           "bg-gradient-card border border-border",
           "shadow-card transition-all duration-300 ease-smooth",
           "p-6 min-h-[180px] flex flex-col items-center justify-center text-center",
-          isHovered && "shadow-hover bg-gradient-hover transform scale-[1.02]",
-          isSelected && "ring-2 ring-primary shadow-hover"
+          isHovered && "shadow-hover bg-gradient-hover transform scale-[1.02]"
         )}
       >
         {/* Accent glow effect */}
@@ -119,11 +116,6 @@ const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, o
             </button>
           )}
         </div>
-
-        {/* Selection indicator */}
-        {!isEditMode && isSelected && (
-          <div className="absolute top-4 right-4 w-3 h-3 bg-primary rounded-full animate-pulse" />
-        )}
       </div>
     </div>
   );

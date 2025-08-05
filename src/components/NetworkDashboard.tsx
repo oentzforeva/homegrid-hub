@@ -8,7 +8,6 @@ import AddAppDialog from "./AddAppDialog";
 import { useAppsData, App } from "@/hooks/useAppsData";
 
 const NetworkDashboard = () => {
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -16,14 +15,11 @@ const NetworkDashboard = () => {
   const { apps, addApp, updateApp, deleteApp, resetToDefaults } = useAppsData();
   const { toast } = useToast();
 
-  const handleAppClick = (appId: string) => {
+  const handleAppClick = (app: App) => {
     if (isEditMode) return;
     
-    setSelectedApps(prev => 
-      prev.includes(appId)
-        ? prev.filter(id => id !== appId)
-        : [...prev, appId]
-    );
+    // Open the app URL directly
+    handleAppLaunch(app.url);
   };
 
   const handleAppLaunch = (url: string) => {
@@ -48,8 +44,6 @@ const NetworkDashboard = () => {
 
   const handleDeleteApp = (id: string) => {
     deleteApp(id);
-    // Remove from selection if it was selected
-    setSelectedApps(prev => prev.filter(appId => appId !== id));
     toast({
       title: "App deleted",
       description: "App removed from dashboard",
@@ -66,16 +60,11 @@ const NetworkDashboard = () => {
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
-    if (isEditMode) {
-      // Exiting edit mode
-      setSelectedApps([]);
-    }
   };
 
   const handleResetApps = () => {
     if (confirm("Reset all apps to defaults? This will remove any custom apps you've added.")) {
       resetToDefaults();
-      setSelectedApps([]);
       toast({
         title: "Apps reset",
         description: "Dashboard reset to default apps",
@@ -165,15 +154,6 @@ const NetworkDashboard = () => {
           </div>
 
           {/* Status indicators */}
-          {!isEditMode && selectedApps.length > 0 && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              <span className="text-sm text-primary font-medium">
-                {selectedApps.length} app{selectedApps.length === 1 ? '' : 's'} selected
-              </span>
-            </div>
-          )}
-          
           {isEditMode && (
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
               <Edit className="w-4 h-4 text-accent" />
@@ -195,9 +175,8 @@ const NetworkDashboard = () => {
                 icon={app.icon}
                 accentColor={app.accentColor}
                 url={app.url}
-                isSelected={selectedApps.includes(app.id)}
                 isEditMode={isEditMode}
-                onClick={() => handleAppClick(app.id)}
+                onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
               />
@@ -209,7 +188,7 @@ const NetworkDashboard = () => {
             <p className="text-sm text-muted-foreground">
               {isEditMode 
                 ? "Edit mode: Click apps to modify • Hover for action buttons" 
-                : "Click apps to select • Hover for launch button • Click Edit to customize"
+                : "Click apps to launch • Click Edit to customize apps"
               }
             </p>
           </footer>
