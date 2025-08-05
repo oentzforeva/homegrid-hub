@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import AppCard from "./AppCard";
 import EditAppDialog from "./EditAppDialog";
 import AddAppDialog from "./AddAppDialog";
-import { useAppConfig, AppConfig } from "@/hooks/useAppConfig";
+import { useSupabaseConfig, AppConfig } from "@/hooks/useSupabaseConfig";
 
 const NetworkDashboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -34,9 +34,8 @@ const NetworkDashboard = () => {
     addApp, 
     updateApp, 
     deleteApp, 
-    resetAllToDefaults,
     updateDashboardConfig
-  } = useAppConfig();
+  } = useSupabaseConfig();
   const { toast } = useToast();
 
   // Network connectivity check function
@@ -214,8 +213,8 @@ const NetworkDashboard = () => {
     });
   };
 
-  const handleAddApp = (newApp: Omit<AppConfig, "id">) => {
-    addApp(newApp);
+  const handleAddApp = async (newApp: Omit<AppConfig, "id" | "lastModified" | "isCustom">) => {
+    await addApp(newApp);
     toast({
       title: "App added",
       description: `${newApp.name} added to dashboard`,
@@ -231,13 +230,10 @@ const NetworkDashboard = () => {
   };
 
   const handleResetApps = () => {
-    if (confirm("Reset dashboard to defaults? This will remove custom apps and reset title/subtitle.")) {
-      resetAllToDefaults();
-      toast({
-        title: "Dashboard reset",
-        description: "Dashboard reset to defaults",
-      });
-    }
+    toast({
+      title: "Reset not available",
+      description: "Database reset will be available in future version",
+    });
   };
 
   const toggleNetworkCheck = (enabled: boolean) => {
