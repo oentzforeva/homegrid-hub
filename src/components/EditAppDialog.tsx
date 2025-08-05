@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Trash2, Save, X } from "lucide-react";
-import { App } from "@/hooks/useAppsData";
+import { AppConfig } from "@/hooks/useAppConfig";
 
 interface EditAppDialogProps {
-  app: App | null;
+  app: AppConfig | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (id: string, updates: Partial<Omit<App, "id">>) => void;
+  onSave: (id: string, updates: Partial<Omit<AppConfig, "id">>) => void;
   onDelete: (id: string) => void;
 }
 
@@ -21,7 +21,13 @@ const EditAppDialog = ({ app, open, onOpenChange, onSave, onDelete }: EditAppDia
     description: "",
     url: "",
     accentColor: "",
-    icon: ""
+    icon: "",
+    specification: {
+      category: "",
+      vendor: "",
+      type: "Web Application",
+      protocol: "HTTPS"
+    }
   });
 
   useEffect(() => {
@@ -31,7 +37,13 @@ const EditAppDialog = ({ app, open, onOpenChange, onSave, onDelete }: EditAppDia
         description: app.description,
         url: app.url,
         accentColor: app.accentColor,
-        icon: app.icon
+        icon: app.icon,
+        specification: {
+          category: app.specification?.category || "",
+          vendor: app.specification?.vendor || "",
+          type: app.specification?.type || "Web Application",
+          protocol: app.specification?.protocol || "HTTPS"
+        }
       });
     }
   }, [app]);
@@ -120,6 +132,64 @@ const EditAppDialog = ({ app, open, onOpenChange, onSave, onDelete }: EditAppDia
               onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
               placeholder="https://example.com/icon.png"
             />
+          </div>
+
+          <div className="space-y-4 border-t border-border pt-4">
+            <h4 className="text-sm font-medium text-foreground">App Specification</h4>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={formData.specification.category}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, category: e.target.value }
+                  }))}
+                  placeholder="e.g., Network Management"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="vendor">Vendor</Label>
+                <Input
+                  id="vendor"
+                  value={formData.specification.vendor}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, vendor: e.target.value }
+                  }))}
+                  placeholder="e.g., Ubiquiti"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="type">Type</Label>
+                <Input
+                  id="type"
+                  value={formData.specification.type}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, type: e.target.value }
+                  }))}
+                  placeholder="e.g., Web Application"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="protocol">Protocol</Label>
+                <Input
+                  id="protocol"
+                  value={formData.specification.protocol}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, protocol: e.target.value }
+                  }))}
+                  placeholder="e.g., HTTPS"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Save, X } from "lucide-react";
-import { App } from "@/hooks/useAppsData";
+import { AppConfig } from "@/hooks/useAppConfig";
 
 interface AddAppDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAdd: (app: Omit<App, "id">) => void;
+  onAdd: (app: Omit<AppConfig, "id">) => void;
 }
 
 const predefinedColors = [
@@ -30,7 +30,13 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
     description: "",
     url: "",
     accentColor: predefinedColors[0],
-    icon: ""
+    icon: "",
+    specification: {
+      category: "",
+      vendor: "",
+      type: "Web Application",
+      protocol: "HTTPS"
+    }
   });
 
   const handleAdd = () => {
@@ -44,7 +50,13 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
       description: formData.description.trim(),
       url: formData.url.trim(),
       accentColor: formData.accentColor,
-      icon: formData.icon.trim() || `https://images.unsplash.com/photo-1518770660439-4636190af475?w=64&h=64&fit=crop&crop=center`
+      icon: formData.icon.trim() || `https://images.unsplash.com/photo-1518770660439-4636190af475?w=64&h=64&fit=crop&crop=center`,
+      specification: {
+        category: formData.specification.category.trim() || "Custom Application",
+        vendor: formData.specification.vendor.trim() || "Unknown",
+        type: formData.specification.type,
+        protocol: formData.specification.protocol
+      }
     });
 
     // Reset form
@@ -53,7 +65,13 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
       description: "",
       url: "",
       accentColor: predefinedColors[0],
-      icon: ""
+      icon: "",
+      specification: {
+        category: "",
+        vendor: "",
+        type: "Web Application",
+        protocol: "HTTPS"
+      }
     });
     
     onOpenChange(false);
@@ -139,6 +157,64 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
             <p className="text-xs text-muted-foreground">
               Leave empty to use a default circuit board icon
             </p>
+          </div>
+
+          <div className="space-y-4 border-t border-border pt-4">
+            <h4 className="text-sm font-medium text-foreground">App Specification</h4>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="add-category">Category</Label>
+                <Input
+                  id="add-category"
+                  value={formData.specification.category}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, category: e.target.value }
+                  }))}
+                  placeholder="e.g., Network Management"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="add-vendor">Vendor</Label>
+                <Input
+                  id="add-vendor"
+                  value={formData.specification.vendor}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, vendor: e.target.value }
+                  }))}
+                  placeholder="e.g., Ubiquiti"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="add-type">Type</Label>
+                <Input
+                  id="add-type"
+                  value={formData.specification.type}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, type: e.target.value }
+                  }))}
+                  placeholder="e.g., Web Application"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="add-protocol">Protocol</Label>
+                <Input
+                  id="add-protocol"
+                  value={formData.specification.protocol}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    specification: { ...prev.specification, protocol: e.target.value }
+                  }))}
+                  placeholder="e.g., HTTPS"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

@@ -8,20 +8,11 @@ import { cn } from "@/lib/utils";
 import AppCard from "./AppCard";
 import EditAppDialog from "./EditAppDialog";
 import AddAppDialog from "./AddAppDialog";
-import { useAppsData, App } from "@/hooks/useAppsData";
-
-const DASHBOARD_SETTINGS_KEY = "network-dashboard-settings";
-
-const defaultSettings = {
-  title: "Network Dashboard",
-  subtitle: "Home Network Services",
-  footer: "Click apps to launch • Click Edit to customize dashboard",
-  networkCheckEnabled: true
-};
+import { useAppConfig, AppConfig } from "@/hooks/useAppConfig";
 
 const NetworkDashboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editingApp, setEditingApp] = useState<App | null>(null);
+  const [editingApp, setEditingApp] = useState<AppConfig | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   
   // Network status state
@@ -29,8 +20,7 @@ const NetworkDashboard = () => {
   const [lastPingTime, setLastPingTime] = useState<Date | null>(null);
   const [appStatuses, setAppStatuses] = useState<Record<string, boolean>>({});
   
-  // Dashboard settings state
-  const [dashboardSettings, setDashboardSettings] = useState(defaultSettings);
+  // Dashboard settings state (for inline editing)
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
   const [isEditingFooter, setIsEditingFooter] = useState(false);
@@ -38,7 +28,15 @@ const NetworkDashboard = () => {
   const [tempSubtitle, setTempSubtitle] = useState("");
   const [tempFooter, setTempFooter] = useState("");
   
-  const { apps, addApp, updateApp, deleteApp, resetToDefaults } = useAppsData();
+  const { 
+    apps, 
+    dashboardConfig,
+    addApp, 
+    updateApp, 
+    deleteApp, 
+    resetAllToDefaults,
+    updateDashboardConfig
+  } = useAppConfig();
   const { toast } = useToast();
 
   // Network connectivity check function
@@ -64,7 +62,7 @@ const NetworkDashboard = () => {
   };
 
   // Check individual app connectivity
-  const checkAppConnectivity = async (app: App) => {
+  const checkAppConnectivity = async (app: AppConfig) => {
     if (!app.url) return;
     
     try {
@@ -102,7 +100,7 @@ const NetworkDashboard = () => {
 
   // Set up periodic connectivity checking (every 5 minutes)
   useEffect(() => {
-    if (!dashboardSettings.networkCheckEnabled) return;
+    if (!dashboardConfig.networkCheckEnabled) return;
     
     // Initial check
     checkConnectivity();
@@ -116,26 +114,9 @@ const NetworkDashboard = () => {
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [apps, dashboardSettings.networkCheckEnabled]); // Re-run when apps or network check setting changes
+  }, [apps, dashboardConfig.networkCheckEnabled]); // Re-run when apps or network check setting changes
 
-  // Load dashboard settings from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem(DASHBOARD_SETTINGS_KEY);
-    if (stored) {
-      try {
-        setDashboardSettings(JSON.parse(stored));
-      } catch (error) {
-        console.error("Failed to parse dashboard settings:", error);
-      }
-    }
-  }, []);
-
-  // Save dashboard settings to localStorage
-  useEffect(() => {
-    localStorage.setItem(DASHBOARD_SETTINGS_KEY, JSON.stringify(dashboardSettings));
-  }, [dashboardSettings]);
-
-  const handleAppClick = (app: App) => {
+  const handleAppClick = (app: AppConfig) => {
     if (isEditMode) return;
     
     // Open the app URL directly
@@ -143,23 +124,23 @@ const NetworkDashboard = () => {
   };
 
   const handleStartEditTitle = () => {
-    setTempTitle(dashboardSettings.title);
+    setTempTitle(dashboardConfig.title);
     setIsEditingTitle(true);
   };
 
   const handleStartEditSubtitle = () => {
-    setTempSubtitle(dashboardSettings.subtitle);
+    setTempSubtitle(dashboardConfig.subtitle);
     setIsEditingSubtitle(true);
   };
 
   const handleStartEditFooter = () => {
-    setTempFooter(dashboardSettings.footer);
+    setTempFooter(dashboardConfig.footer);
     setIsEditingFooter(true);
   };
 
   const handleSaveTitle = () => {
     if (tempTitle.trim()) {
-      setDashboardSettings(prev => ({ ...prev, title: tempTitle.trim() }));
+      updateDashboardConfig({ title: tempTitle.trim() });
       toast({
         title: "Title updated",
         description: "Dashboard title saved successfully",
@@ -170,7 +151,7 @@ const NetworkDashboard = () => {
 
   const handleSaveSubtitle = () => {
     if (tempSubtitle.trim()) {
-      setDashboardSettings(prev => ({ ...prev, subtitle: tempSubtitle.trim() }));
+      updateDashboardConfig({ subtitle: tempSubtitle.trim() });
       toast({
         title: "Subtitle updated", 
         description: "Dashboard subtitle saved successfully",
@@ -181,7 +162,7 @@ const NetworkDashboard = () => {
 
   const handleSaveFooter = () => {
     if (tempFooter.trim()) {
-      setDashboardSettings(prev => ({ ...prev, footer: tempFooter.trim() }));
+      updateDashboardConfig({ footer: tempFooter.trim() });
       toast({
         title: "Footer updated",
         description: "Dashboard footer saved successfully", 
@@ -213,11 +194,11 @@ const NetworkDashboard = () => {
     });
   };
 
-  const handleEditApp = (app: App) => {
+  const handleEditApp = (app: AppConfig) => {
     setEditingApp(app);
   };
 
-  const handleSaveApp = (id: string, updates: Partial<Omit<App, "id">>) => {
+  const handleSaveApp = (id: string, updates: Partial<Omit<AppConfig, "id">>) => {
     updateApp(id, updates);
     toast({
       title: "App updated",
@@ -233,7 +214,7 @@ const NetworkDashboard = () => {
     });
   };
 
-  const handleAddApp = (newApp: Omit<App, "id">) => {
+  const handleAddApp = (newApp: Omit<AppConfig, "id">) => {
     addApp(newApp);
     toast({
       title: "App added",
@@ -251,8 +232,7 @@ const NetworkDashboard = () => {
 
   const handleResetApps = () => {
     if (confirm("Reset dashboard to defaults? This will remove custom apps and reset title/subtitle.")) {
-      resetToDefaults();
-      setDashboardSettings(defaultSettings);
+      resetAllToDefaults();
       toast({
         title: "Dashboard reset",
         description: "Dashboard reset to defaults",
@@ -261,7 +241,7 @@ const NetworkDashboard = () => {
   };
 
   const toggleNetworkCheck = (enabled: boolean) => {
-    setDashboardSettings(prev => ({ ...prev, networkCheckEnabled: enabled }));
+    updateDashboardConfig({ networkCheckEnabled: enabled });
     toast({
       title: enabled ? "Network monitoring enabled" : "Network monitoring disabled",
       description: enabled ? "Apps will show connectivity status" : "Network status checks paused",
@@ -312,7 +292,7 @@ const NetworkDashboard = () => {
                     )}
                     onClick={isEditMode ? handleStartEditTitle : undefined}
                   >
-                    {dashboardSettings.title}
+                    {dashboardConfig.title}
                     {isEditMode && (
                       <Edit className="inline ml-2 h-5 w-5 text-muted-foreground" />
                     )}
@@ -347,7 +327,7 @@ const NetworkDashboard = () => {
                     )}
                     onClick={isEditMode ? handleStartEditSubtitle : undefined}
                   >
-                    {dashboardSettings.subtitle}
+                    {dashboardConfig.subtitle}
                     {isEditMode && (
                       <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
                     )}
@@ -358,7 +338,7 @@ const NetworkDashboard = () => {
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                {dashboardSettings.networkCheckEnabled && (
+                {dashboardConfig.networkCheckEnabled && (
                   <div className="flex items-center gap-2">
                     <Activity 
                       className={cn(
@@ -390,7 +370,7 @@ const NetworkDashboard = () => {
                       <Wifi className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Network Check</span>
                       <Switch 
-                        checked={dashboardSettings.networkCheckEnabled}
+                        checked={dashboardConfig.networkCheckEnabled}
                         onCheckedChange={toggleNetworkCheck}
                       />
                     </div>
@@ -459,7 +439,7 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
-                isOnline={dashboardSettings.networkCheckEnabled ? appStatuses[app.id] : undefined}
+                isOnline={dashboardConfig.networkCheckEnabled ? appStatuses[app.id] : undefined}
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
@@ -499,7 +479,7 @@ const NetworkDashboard = () => {
               >
                 {isEditMode 
                   ? "Edit mode: Click apps to modify • Click title/subtitle/footer to customize • Use Reset All to restore defaults"
-                  : dashboardSettings.footer
+                  : dashboardConfig.footer
                 }
                 {isEditMode && (
                   <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
