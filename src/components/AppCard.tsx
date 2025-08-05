@@ -12,9 +12,10 @@ interface AppCardProps {
   onEdit?: () => void;
   onLaunch?: () => void;
   isEditMode?: boolean;
+  isOnline?: boolean;
 }
 
-const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isEditMode = false }: AppCardProps) => {
+const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isEditMode = false, isOnline }: AppCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
@@ -62,6 +63,20 @@ const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, o
             background: `radial-gradient(circle at center, ${accentColor}, transparent 70%)`
           }}
         />
+
+        {/* Connectivity status indicator */}
+        {url && isOnline !== undefined && (
+          <div className="absolute top-3 left-3 z-20">
+            <div 
+              className={cn(
+                "w-3 h-3 rounded-full",
+                isOnline 
+                  ? "bg-green-500 animate-pulse" 
+                  : "bg-red-500 animate-[blink_1s_linear_infinite]"
+              )}
+            />
+          </div>
+        )}
 
         {/* App icon */}
         <div className="relative z-10 mb-4">

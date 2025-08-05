@@ -25,6 +25,7 @@ const NetworkDashboard = () => {
   // Network status state
   const [isOnline, setIsOnline] = useState(true);
   const [lastPingTime, setLastPingTime] = useState<Date | null>(null);
+  const [appStatuses, setAppStatuses] = useState<Record<string, boolean>>({});
   
   // Dashboard settings state
   const [dashboardSettings, setDashboardSettings] = useState(defaultSettings);
@@ -60,17 +61,58 @@ const NetworkDashboard = () => {
     }
   };
 
+  // Check individual app connectivity
+  const checkAppConnectivity = async (app: App) => {
+    if (!app.url) return;
+    
+    try {
+      // Extract hostname from URL for DNS checking
+      const url = new URL(app.url);
+      const hostname = url.hostname;
+      
+      // Use DNS lookup as a proxy for connectivity
+      const response = await fetch(`https://dns.google/resolve?name=${hostname}&type=A`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Check if DNS resolution was successful
+        setAppStatuses(prev => ({ 
+          ...prev, 
+          [app.id]: data.Status === 0 && data.Answer && data.Answer.length > 0 
+        }));
+      } else {
+        setAppStatuses(prev => ({ ...prev, [app.id]: false }));
+      }
+    } catch (error) {
+      setAppStatuses(prev => ({ ...prev, [app.id]: false }));
+      console.warn(`App connectivity check failed for ${app.name}:`, error);
+    }
+  };
+
+  // Check all apps connectivity
+  const checkAllAppsConnectivity = async () => {
+    const appsWithUrls = apps.filter(app => app.url);
+    await Promise.all(appsWithUrls.map(checkAppConnectivity));
+  };
+
   // Set up periodic connectivity checking (every 5 minutes)
   useEffect(() => {
     // Initial check
     checkConnectivity();
+    checkAllAppsConnectivity();
     
     // Set up interval for every 5 minutes (300,000ms)
-    const interval = setInterval(checkConnectivity, 5 * 60 * 1000);
+    const interval = setInterval(() => {
+      checkConnectivity();
+      checkAllAppsConnectivity();
+    }, 5 * 60 * 1000);
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, []);
+  }, [apps]); // Re-run when apps change
 
   // Load dashboard settings from localStorage
   useEffect(() => {
@@ -395,6 +437,7 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
+                isOnline={appStatuses[app.id]}
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
