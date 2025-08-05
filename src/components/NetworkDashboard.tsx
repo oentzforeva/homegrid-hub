@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import AppCard from "./AppCard";
@@ -13,8 +15,9 @@ const DASHBOARD_SETTINGS_KEY = "network-dashboard-settings";
 
 const defaultSettings = {
   title: "Network Dashboard",
-  subtitle: "Home Network Services",
-  footer: "Click apps to launch • Click Edit to customize dashboard"
+  subtitle: "Home Network Services", 
+  footer: "Click apps to launch • Click Edit to customize dashboard",
+  networkStatusEnabled: true
 };
 
 const NetworkDashboard = () => {
@@ -41,6 +44,8 @@ const NetworkDashboard = () => {
 
   // Network connectivity check function
   const checkConnectivity = async () => {
+    if (!dashboardSettings.networkStatusEnabled) return;
+    
     try {
       // Use a reliable endpoint as a proxy for network connectivity
       // We'll use Google's DNS-over-HTTPS API as it's fast and reliable
@@ -63,7 +68,7 @@ const NetworkDashboard = () => {
 
   // Check individual app connectivity
   const checkAppConnectivity = async (app: App) => {
-    if (!app.url) return;
+    if (!app.url || !dashboardSettings.networkStatusEnabled) return;
     
     try {
       // Extract hostname from URL for DNS checking
@@ -94,12 +99,16 @@ const NetworkDashboard = () => {
 
   // Check all apps connectivity
   const checkAllAppsConnectivity = async () => {
+    if (!dashboardSettings.networkStatusEnabled) return;
+    
     const appsWithUrls = apps.filter(app => app.url);
     await Promise.all(appsWithUrls.map(checkAppConnectivity));
   };
 
   // Set up periodic connectivity checking (every 5 minutes)
   useEffect(() => {
+    if (!dashboardSettings.networkStatusEnabled) return;
+    
     // Initial check
     checkConnectivity();
     checkAllAppsConnectivity();
@@ -112,14 +121,20 @@ const NetworkDashboard = () => {
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [apps]); // Re-run when apps change
+  }, [apps, dashboardSettings.networkStatusEnabled]); // Re-run when apps change or network status setting changes
 
   // Load dashboard settings from localStorage
   useEffect(() => {
     const stored = localStorage.getItem(DASHBOARD_SETTINGS_KEY);
     if (stored) {
       try {
-        setDashboardSettings(JSON.parse(stored));
+        const parsedSettings = JSON.parse(stored);
+        // Ensure networkStatusEnabled has a default value for backwards compatibility
+        setDashboardSettings({
+          ...defaultSettings,
+          ...parsedSettings,
+          networkStatusEnabled: parsedSettings.networkStatusEnabled ?? true
+        });
       } catch (error) {
         console.error("Failed to parse dashboard settings:", error);
       }
@@ -130,6 +145,24 @@ const NetworkDashboard = () => {
   useEffect(() => {
     localStorage.setItem(DASHBOARD_SETTINGS_KEY, JSON.stringify(dashboardSettings));
   }, [dashboardSettings]);
+
+  const handleNetworkStatusToggle = (enabled: boolean) => {
+    setDashboardSettings(prev => ({ ...prev, networkStatusEnabled: enabled }));
+    
+    if (!enabled) {
+      // Clear network status when disabled
+      setAppStatuses({});
+      setIsOnline(true);
+      setLastPingTime(null);
+    }
+    
+    toast({
+      title: enabled ? "Network status enabled" : "Network status disabled",
+      description: enabled 
+        ? "Network connectivity checking is now active"
+        : "Network connectivity checking has been turned off",
+    });
+  };
 
   const handleAppClick = (app: App) => {
     if (isEditMode) return;
@@ -346,24 +379,26 @@ const NetworkDashboard = () => {
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Activity 
-                    className={cn(
-                      "h-4 w-4", 
-                      isOnline 
-                        ? "text-green-500 animate-pulse" 
-                        : "text-red-500 animate-[blink_1s_linear_infinite]"
-                    )} 
-                  />
-                  <span className={isOnline ? "text-green-500" : "text-red-500"}>
-                    {isOnline ? "Online" : "Offline"}
-                  </span>
-                  {lastPingTime && isOnline && (
-                    <span className="text-xs text-muted-foreground/70">
-                      • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {dashboardSettings.networkStatusEnabled && (
+                  <div className="flex items-center gap-2">
+                    <Activity 
+                      className={cn(
+                        "h-4 w-4", 
+                        isOnline 
+                          ? "text-green-500 animate-pulse" 
+                          : "text-red-500 animate-[blink_1s_linear_infinite]"
+                      )} 
+                    />
+                    <span className={isOnline ? "text-green-500" : "text-red-500"}>
+                      {isOnline ? "Online" : "Offline"}
                     </span>
-                  )}
-                </div>
+                    {lastPingTime && isOnline && (
+                      <span className="text-xs text-muted-foreground/70">
+                        • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="font-mono">
                   {currentTime}
                 </div>
@@ -414,13 +449,33 @@ const NetworkDashboard = () => {
             </div>
           </div>
 
-          {/* Status indicators */}
+          {/* Status indicators and settings */}
           {isEditMode && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-              <Edit className="w-4 h-4 text-accent" />
-              <span className="text-sm text-accent font-medium">
-                Edit Mode - Click apps to modify • Click title/subtitle to edit
-              </span>
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                <Edit className="w-4 h-4 text-accent" />
+                <span className="text-sm text-accent font-medium">
+                  Edit Mode - Click apps to modify • Click title/subtitle to edit
+                </span>
+              </div>
+              
+              {/* Network Status Toggle */}
+              <div className="inline-flex items-center gap-4 px-4 py-3 bg-gradient-card border border-border rounded-lg">
+                <Label htmlFor="network-status-toggle" className="text-sm font-medium">
+                  Network Status Monitoring
+                </Label>
+                <Switch
+                  id="network-status-toggle"
+                  checked={dashboardSettings.networkStatusEnabled}
+                  onCheckedChange={handleNetworkStatusToggle}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {dashboardSettings.networkStatusEnabled 
+                    ? "Checks connectivity every 5 minutes" 
+                    : "Network monitoring disabled"
+                  }
+                </span>
+              </div>
             </div>
           )}
         </header>
@@ -437,7 +492,7 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
-                isOnline={appStatuses[app.id]}
+                isOnline={dashboardSettings.networkStatusEnabled ? appStatuses[app.id] : undefined}
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
