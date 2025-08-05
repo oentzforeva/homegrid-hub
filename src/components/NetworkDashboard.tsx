@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import AppCard from "./AppCard";
@@ -15,14 +13,11 @@ const DASHBOARD_SETTINGS_KEY = "network-dashboard-settings";
 
 const defaultSettings = {
   title: "Network Dashboard",
-  subtitle: "Home Network Services", 
-  footer: "Click apps to launch • Click Edit to customize dashboard",
-  networkStatusEnabled: true
+  subtitle: "Home Network Services",
+  footer: "Click apps to launch • Click Edit to customize dashboard"
 };
 
 const NetworkDashboard = () => {
-  console.log("NetworkDashboard component is rendering");
-  console.log("Starting component initialization...");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -46,8 +41,6 @@ const NetworkDashboard = () => {
 
   // Network connectivity check function
   const checkConnectivity = async () => {
-    if (!dashboardSettings.networkStatusEnabled) return;
-    
     try {
       // Use a reliable endpoint as a proxy for network connectivity
       // We'll use Google's DNS-over-HTTPS API as it's fast and reliable
@@ -70,7 +63,7 @@ const NetworkDashboard = () => {
 
   // Check individual app connectivity
   const checkAppConnectivity = async (app: App) => {
-    if (!app.url || !dashboardSettings.networkStatusEnabled) return;
+    if (!app.url) return;
     
     try {
       // Extract hostname from URL for DNS checking
@@ -101,16 +94,12 @@ const NetworkDashboard = () => {
 
   // Check all apps connectivity
   const checkAllAppsConnectivity = async () => {
-    if (!dashboardSettings.networkStatusEnabled) return;
-    
     const appsWithUrls = apps.filter(app => app.url);
     await Promise.all(appsWithUrls.map(checkAppConnectivity));
   };
 
   // Set up periodic connectivity checking (every 5 minutes)
   useEffect(() => {
-    if (!dashboardSettings.networkStatusEnabled) return;
-    
     // Initial check
     checkConnectivity();
     checkAllAppsConnectivity();
@@ -123,20 +112,14 @@ const NetworkDashboard = () => {
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [apps, dashboardSettings.networkStatusEnabled]); // Re-run when apps change or network status setting changes
+  }, [apps]); // Re-run when apps change
 
   // Load dashboard settings from localStorage
   useEffect(() => {
     const stored = localStorage.getItem(DASHBOARD_SETTINGS_KEY);
     if (stored) {
       try {
-        const parsedSettings = JSON.parse(stored);
-        // Ensure networkStatusEnabled has a default value for backwards compatibility
-        setDashboardSettings({
-          ...defaultSettings,
-          ...parsedSettings,
-          networkStatusEnabled: parsedSettings.networkStatusEnabled ?? true
-        });
+        setDashboardSettings(JSON.parse(stored));
       } catch (error) {
         console.error("Failed to parse dashboard settings:", error);
       }
@@ -147,24 +130,6 @@ const NetworkDashboard = () => {
   useEffect(() => {
     localStorage.setItem(DASHBOARD_SETTINGS_KEY, JSON.stringify(dashboardSettings));
   }, [dashboardSettings]);
-
-  const handleNetworkStatusToggle = (enabled: boolean) => {
-    setDashboardSettings(prev => ({ ...prev, networkStatusEnabled: enabled }));
-    
-    if (!enabled) {
-      // Clear network status when disabled
-      setAppStatuses({});
-      setIsOnline(true);
-      setLastPingTime(null);
-    }
-    
-    toast({
-      title: enabled ? "Network status enabled" : "Network status disabled",
-      description: enabled 
-        ? "Network connectivity checking is now active"
-        : "Network connectivity checking has been turned off",
-    });
-  };
 
   const handleAppClick = (app: App) => {
     if (isEditMode) return;
@@ -297,12 +262,246 @@ const NetworkDashboard = () => {
     hour12: false 
   });
 
-  console.log("About to render NetworkDashboard JSX");
-  
   return (
-    <div className="min-h-screen bg-background">
-      <h1>Test - Dashboard Loading</h1>
-      <p>If you can see this, the component is working</p>
+    <div className="min-h-screen bg-gradient-bg">
+      <div className="container mx-auto px-6 py-8">
+        <header className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-card rounded-xl border border-border shadow-card">
+                <Server className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                {/* Editable Title */}
+                {isEditMode && isEditingTitle ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={tempTitle}
+                      onChange={(e) => setTempTitle(e.target.value)}
+                      className="text-3xl font-bold bg-transparent border-primary/50 focus:border-primary"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveTitle();
+                        if (e.key === 'Escape') handleCancelTitleEdit();
+                      }}
+                      autoFocus
+                    />
+                    <Button size="sm" variant="ghost" onClick={handleSaveTitle}>
+                      <Check className="h-4 w-4 text-accent" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={handleCancelTitleEdit}>
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ) : (
+                  <h1 
+                    className={cn(
+                      "text-3xl font-bold text-foreground",
+                      isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                    )}
+                    onClick={isEditMode ? handleStartEditTitle : undefined}
+                  >
+                    {dashboardSettings.title}
+                    {isEditMode && (
+                      <Edit className="inline ml-2 h-5 w-5 text-muted-foreground" />
+                    )}
+                  </h1>
+                )}
+
+                {/* Editable Subtitle */}
+                {isEditMode && isEditingSubtitle ? (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      value={tempSubtitle}
+                      onChange={(e) => setTempSubtitle(e.target.value)}
+                      className="text-base bg-transparent border-primary/50 focus:border-primary"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveSubtitle();
+                        if (e.key === 'Escape') handleCancelSubtitleEdit();
+                      }}
+                      autoFocus
+                    />
+                    <Button size="sm" variant="ghost" onClick={handleSaveSubtitle}>
+                      <Check className="h-4 w-4 text-accent" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={handleCancelSubtitleEdit}>
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ) : (
+                  <p 
+                    className={cn(
+                      "text-muted-foreground",
+                      isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                    )}
+                    onClick={isEditMode ? handleStartEditSubtitle : undefined}
+                  >
+                    {dashboardSettings.subtitle}
+                    {isEditMode && (
+                      <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
+                    )}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Activity 
+                    className={cn(
+                      "h-4 w-4", 
+                      isOnline 
+                        ? "text-green-500 animate-pulse" 
+                        : "text-red-500 animate-[blink_1s_linear_infinite]"
+                    )} 
+                  />
+                  <span className={isOnline ? "text-green-500" : "text-red-500"}>
+                    {isOnline ? "Online" : "Offline"}
+                  </span>
+                  {lastPingTime && isOnline && (
+                    <span className="text-xs text-muted-foreground/70">
+                      • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+                <div className="font-mono">
+                  {currentTime}
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {isEditMode && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAddDialog(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add App
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResetApps}
+                      className="flex items-center gap-2"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Reset All
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant={isEditMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={toggleEditMode}
+                  className="flex items-center gap-2"
+                >
+                  {isEditMode ? (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Done
+                    </>
+                  ) : (
+                    <>
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Status indicators */}
+          {isEditMode && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+              <Edit className="w-4 h-4 text-accent" />
+              <span className="text-sm text-accent font-medium">
+                Edit Mode - Click apps to modify • Click title/subtitle to edit
+              </span>
+            </div>
+          )}
+        </header>
+
+        {/* Apps Grid */}
+        <main>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {apps.map((app) => (
+              <AppCard
+                key={app.id}
+                name={app.name}
+                description={app.description}
+                icon={app.icon}
+                accentColor={app.accentColor}
+                url={app.url}
+                isEditMode={isEditMode}
+                isOnline={appStatuses[app.id]}
+                onClick={() => handleAppClick(app)}
+                onEdit={() => handleEditApp(app)}
+                onLaunch={() => handleAppLaunch(app.url)}
+              />
+            ))}
+          </div>
+
+          {/* Footer info */}
+          <footer className="mt-16 text-center">
+            {/* Editable Footer */}
+            {isEditMode && isEditingFooter ? (
+              <div className="flex items-center justify-center gap-2">
+                <Input
+                  value={tempFooter}
+                  onChange={(e) => setTempFooter(e.target.value)}
+                  className="text-sm bg-transparent border-primary/50 focus:border-primary max-w-md"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveFooter();
+                    if (e.key === 'Escape') handleCancelFooterEdit();
+                  }}
+                  autoFocus
+                />
+                <Button size="sm" variant="ghost" onClick={handleSaveFooter}>
+                  <Check className="h-4 w-4 text-accent" />
+                </Button>
+                <Button size="sm" variant="ghost" onClick={handleCancelFooterEdit}>
+                  <X className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            ) : (
+              <p 
+                className={cn(
+                  "text-sm text-muted-foreground",
+                  isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                )}
+                onClick={isEditMode ? handleStartEditFooter : undefined}
+              >
+                {isEditMode 
+                  ? "Edit mode: Click apps to modify • Click title/subtitle/footer to customize • Use Reset All to restore defaults"
+                  : dashboardSettings.footer
+                }
+                {isEditMode && (
+                  <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
+                )}
+              </p>
+            )}
+          </footer>
+        </main>
+
+        {/* Dialogs */}
+        <EditAppDialog
+          app={editingApp}
+          open={!!editingApp}
+          onOpenChange={(open) => !open && setEditingApp(null)}
+          onSave={handleSaveApp}
+          onDelete={handleDeleteApp}
+        />
+        
+        <AddAppDialog
+          open={showAddDialog}
+          onOpenChange={setShowAddDialog}
+          onAdd={handleAddApp}
+        />
+      </div>
     </div>
   );
 };
