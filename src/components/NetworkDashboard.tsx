@@ -22,6 +22,7 @@ const defaultSettings = {
 
 const NetworkDashboard = () => {
   console.log("NetworkDashboard component is rendering");
+  console.log("Starting component initialization...");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -296,6 +297,7 @@ const NetworkDashboard = () => {
     hour12: false 
   });
 
+  console.log("About to render NetworkDashboard JSX");
   return (
     <div className="min-h-screen bg-gradient-bg">
       <div className="container mx-auto px-6 py-8">
