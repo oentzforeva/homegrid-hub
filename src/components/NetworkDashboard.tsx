@@ -31,6 +31,7 @@ const NetworkDashboard = () => {
   const { 
     apps, 
     dashboardConfig,
+    isLoading,
     addApp, 
     updateApp, 
     deleteApp, 
@@ -41,6 +42,8 @@ const NetworkDashboard = () => {
   } = useAppConfig();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  console.log('NetworkDashboard render - apps:', apps.length, 'loading:', isLoading);
 
   // Network connectivity check function
   const checkConnectivity = async () => {
