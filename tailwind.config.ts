@@ -61,7 +61,25 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				'unifi-blue': 'hsl(var(--unifi-blue))',
+				'homeassistant-blue': 'hsl(var(--homeassistant-blue))',
+				'synology-orange': 'hsl(var(--synology-orange))',
+				'plex-yellow': 'hsl(var(--plex-yellow))',
+				'paperless-green': 'hsl(var(--paperless-green))'
+			},
+			backgroundImage: {
+				'gradient-bg': 'var(--gradient-bg)',
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-hover': 'var(--gradient-hover)'
+			},
+			boxShadow: {
+				'card': 'var(--shadow-card)',
+				'hover': 'var(--shadow-hover)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'var(--transition-smooth)',
+				'bounce': 'var(--transition-bounce)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
