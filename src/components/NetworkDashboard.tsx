@@ -461,6 +461,16 @@ const NetworkDashboard = () => {
                     />
                   </div>
                   
+                  {/* Local HTTP toggle */}
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                    <Server className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                    <Switch 
+                      checked={dashboardConfig.assumeLocalHttpOnline ?? false}
+                      onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
+                    />
+                  </div>
+                  
                   {/* Action buttons */}
                   <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
                     <Button
@@ -534,9 +544,16 @@ const NetworkDashboard = () => {
                     ? appStatuses[app.id]
                       ? (appStatuses[app.id].isReachable
                           ? 'online'
-                          : (typeof window !== 'undefined' && window.location.protocol === 'https:' && app.url.startsWith('http://')
-                              ? 'unknown'
-                              : 'offline'))
+                          : (typeof window !== 'undefined' && 
+                             window.location.protocol === 'https:' && 
+                             app.url.startsWith('http://') &&
+                             dashboardConfig.assumeLocalHttpOnline
+                              ? 'online'
+                              : (typeof window !== 'undefined' && 
+                                 window.location.protocol === 'https:' && 
+                                 app.url.startsWith('http://')
+                                  ? 'unknown'
+                                  : 'offline')))
                       : undefined
                     : undefined
                 }

@@ -65,6 +65,8 @@ export interface DashboardConfig {
   footer: string;
   /** Whether network monitoring is enabled */
   networkCheckEnabled: boolean;
+  /** Whether to assume local HTTP services are online when mixed content blocks checks */
+  assumeLocalHttpOnline?: boolean;
   /** Dashboard theme preferences */
   theme?: {
     /** Overall color scheme preference */
@@ -104,6 +106,7 @@ export const defaultDashboardConfig: DashboardConfig = {
   subtitle: "Home Network Services",
   footer: "Click apps to launch • Click Edit to customize dashboard",
   networkCheckEnabled: true,
+  assumeLocalHttpOnline: false,
   theme: {
     colorScheme: 'auto'
   },
