@@ -63,6 +63,8 @@ export interface DashboardConfig {
   subtitle: string;
   /** Footer text */
   footer: string;
+  /** Header icon URL (optional, defaults to Server icon) */
+  headerIcon?: string;
   /** Whether network monitoring is enabled */
   networkCheckEnabled: boolean;
   /** Whether to assume local HTTP services are online when mixed content blocks checks */

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi, Download, Upload } from "lucide-react";
+import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi, Download, Upload, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -25,9 +25,11 @@ const NetworkDashboard = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
   const [isEditingFooter, setIsEditingFooter] = useState(false);
+  const [isEditingIcon, setIsEditingIcon] = useState(false);
   const [tempTitle, setTempTitle] = useState("");
   const [tempSubtitle, setTempSubtitle] = useState("");
   const [tempFooter, setTempFooter] = useState("");
+  const [tempIcon, setTempIcon] = useState("");
   
   const { 
     apps, 
@@ -128,6 +130,11 @@ const NetworkDashboard = () => {
     setIsEditingFooter(true);
   };
 
+  const handleStartEditIcon = () => {
+    setTempIcon(dashboardConfig.headerIcon || "");
+    setIsEditingIcon(true);
+  };
+
   const handleSaveTitle = () => {
     if (tempTitle.trim()) {
       updateDashboardConfig({ title: tempTitle.trim() });
@@ -161,6 +168,15 @@ const NetworkDashboard = () => {
     setIsEditingFooter(false);
   };
 
+  const handleSaveIcon = () => {
+    updateDashboardConfig({ headerIcon: tempIcon.trim() || undefined });
+    toast({
+      title: "Icon updated",
+      description: tempIcon.trim() ? "Custom icon saved successfully" : "Reset to default icon",
+    });
+    setIsEditingIcon(false);
+  };
+
   const handleCancelTitleEdit = () => {
     setIsEditingTitle(false);
     setTempTitle("");
@@ -174,6 +190,11 @@ const NetworkDashboard = () => {
   const handleCancelFooterEdit = () => {
     setIsEditingFooter(false);
     setTempFooter("");
+  };
+
+  const handleCancelIconEdit = () => {
+    setIsEditingIcon(false);
+    setTempIcon("");
   };
 
   const handleAppLaunch = (url: string) => {
@@ -214,10 +235,11 @@ const NetworkDashboard = () => {
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
-    // Cancel any ongoing title/subtitle/footer edits when toggling mode
+    // Cancel any ongoing title/subtitle/footer/icon edits when toggling mode
     setIsEditingTitle(false);
     setIsEditingSubtitle(false);
     setIsEditingFooter(false);
+    setIsEditingIcon(false);
   };
 
   const handleResetApps = () => {
@@ -320,9 +342,74 @@ const NetworkDashboard = () => {
             {/* Main header content */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-card rounded-xl border border-border shadow-card">
-                  <Server className="h-8 w-8 text-primary" />
-                </div>
+                {/* Editable Icon */}
+                {isEditMode && isEditingIcon ? (
+                  <div className="flex items-center gap-2">
+                    <div className="p-3 bg-gradient-card rounded-xl border border-border shadow-card">
+                      {dashboardConfig.headerIcon ? (
+                        <img 
+                          src={dashboardConfig.headerIcon} 
+                          alt="Header icon" 
+                          className="h-8 w-8 object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const fallbackIcon = e.currentTarget.parentElement?.querySelector('.fallback-icon');
+                            fallbackIcon?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <Server className={cn("h-8 w-8 text-primary fallback-icon", dashboardConfig.headerIcon && "hidden")} />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        value={tempIcon}
+                        onChange={(e) => setTempIcon(e.target.value)}
+                        placeholder="Paste icon URL here..."
+                        className="text-sm bg-transparent border-primary/50 focus:border-primary min-w-[200px]"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveIcon();
+                          if (e.key === 'Escape') handleCancelIconEdit();
+                        }}
+                        autoFocus
+                      />
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" onClick={handleSaveIcon}>
+                          <Check className="h-4 w-4 text-accent" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={handleCancelIconEdit}>
+                          <X className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    className={cn(
+                      "relative p-3 bg-gradient-card rounded-xl border border-border shadow-card",
+                      isEditMode && "cursor-pointer hover:border-primary/50 transition-colors"
+                    )}
+                    onClick={isEditMode ? handleStartEditIcon : undefined}
+                  >
+                    {dashboardConfig.headerIcon ? (
+                      <img 
+                        src={dashboardConfig.headerIcon} 
+                        alt="Header icon" 
+                        className="h-8 w-8 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallbackIcon = e.currentTarget.parentElement?.querySelector('.fallback-icon');
+                          fallbackIcon?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <Server className={cn("h-8 w-8 text-primary fallback-icon", dashboardConfig.headerIcon && "hidden")} />
+                    {isEditMode && (
+                      <div className="absolute -top-1 -right-1 bg-accent/20 rounded-full p-1">
+                        <Image className="h-3 w-3 text-accent" />
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="flex-1">
                   {/* Editable Title */}
                   {isEditMode && isEditingTitle ? (
