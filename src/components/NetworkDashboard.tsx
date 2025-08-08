@@ -67,33 +67,48 @@ const NetworkDashboard = () => {
     }
   };
 
-  // Check individual app connectivity
+  // Check individual app connectivity by probing the actual URL
   const checkAppConnectivity = async (app: AppConfig) => {
     if (!app.url) return;
     
+    // Normalize URL and handle missing protocol
+    let probeUrl = app.url;
     try {
-      // Extract hostname from URL for DNS checking
-      const url = new URL(app.url);
-      const hostname = url.hostname;
-      
-      // Use DNS lookup as a proxy for connectivity
-      const response = await fetch(`https://dns.google/resolve?name=${hostname}&type=A`, {
-        method: 'GET',
+      // Validate URL as-is
+      new URL(probeUrl);
+    } catch {
+      try {
+        // Try adding http:// if protocol is missing
+        probeUrl = `http://${probeUrl}`;
+        new URL(probeUrl);
+      } catch {
+        setAppStatuses((prev) => ({ ...prev, [app.id]: false }));
+        console.warn(`Invalid URL for connectivity check: ${app.url}`);
+        return;
+      }
+    }
+
+    // Mixed content guard: http target from an https page may be blocked
+    if (window.location.protocol === 'https:' && probeUrl.startsWith('http:')) {
+      console.warn(
+        `Mixed content: attempting to probe an http URL from an https page. The browser may block this request -> ${probeUrl}`
+      );
+    }
+
+    try {
+      // Perform a lightweight HTTP probe. With no-cors, an opaque response still
+      // indicates reachability if the request resolves without throwing.
+      await fetch(probeUrl, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        cache: 'no-store',
+        redirect: 'follow',
         signal: AbortSignal.timeout(5000),
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        // Check if DNS resolution was successful
-        setAppStatuses(prev => ({ 
-          ...prev, 
-          [app.id]: data.Status === 0 && data.Answer && data.Answer.length > 0 
-        }));
-      } else {
-        setAppStatuses(prev => ({ ...prev, [app.id]: false }));
-      }
+
+      setAppStatuses((prev) => ({ ...prev, [app.id]: true }));
     } catch (error) {
-      setAppStatuses(prev => ({ ...prev, [app.id]: false }));
+      setAppStatuses((prev) => ({ ...prev, [app.id]: false }));
       console.warn(`App connectivity check failed for ${app.name}:`, error);
     }
   };
