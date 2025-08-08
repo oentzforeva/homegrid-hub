@@ -12,10 +12,10 @@ interface AppCardProps {
   onEdit?: () => void;
   onLaunch?: () => void;
   isEditMode?: boolean;
-  isOnline?: boolean;
+  status?: "online" | "offline" | "unknown";
 }
 
-const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isEditMode = false, isOnline }: AppCardProps) => {
+const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, onLaunch, isEditMode = false, status }: AppCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
@@ -65,15 +65,18 @@ const AppCard = ({ name, icon, description, accentColor, url, onClick, onEdit, o
         />
 
         {/* Connectivity status indicator */}
-        {url && isOnline !== undefined && (
+        {url && status !== undefined && (
           <div className="absolute top-3 left-3 z-20">
             <div 
               className={cn(
                 "w-3 h-3 rounded-full",
-                isOnline 
-                  ? "bg-green-500 animate-pulse" 
-                  : "bg-red-500 animate-[blink_1s_linear_infinite]"
+                status === 'online'
+                  ? "bg-green-500 animate-pulse"
+                  : status === 'offline'
+                    ? "bg-red-500 animate-[blink_1s_linear_infinite]"
+                    : "bg-yellow-500"
               )}
+              title={status === 'unknown' ? "Local HTTP target: browser blocks check on HTTPS pages" : undefined}
             />
           </div>
         )}

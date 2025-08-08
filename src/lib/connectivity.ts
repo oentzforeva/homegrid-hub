@@ -13,6 +13,7 @@ export interface ConnectivityResult {
   method: 'fetch' | 'image' | 'websocket' | 'fallback';
   error?: string;
   protocol?: 'http' | 'https';
+  blockedByMixedContent?: boolean;
 }
 
 /**

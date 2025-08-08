@@ -529,7 +529,17 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
-                isOnline={dashboardConfig.networkCheckEnabled && (app.networkCheckEnabled ?? true) ? appStatuses[app.id]?.isReachable : undefined}
+                status={
+                  dashboardConfig.networkCheckEnabled && (app.networkCheckEnabled ?? true)
+                    ? appStatuses[app.id]
+                      ? (appStatuses[app.id].isReachable
+                          ? 'online'
+                          : (typeof window !== 'undefined' && window.location.protocol === 'https:' && app.url.startsWith('http://')
+                              ? 'unknown'
+                              : 'offline'))
+                      : undefined
+                    : undefined
+                }
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
