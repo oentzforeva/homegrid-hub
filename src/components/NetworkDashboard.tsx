@@ -411,48 +411,48 @@ const NetworkDashboard = () => {
                       </Button>
                     </div>
                   ) : (
-                    <p 
-                      className={cn(
-                        "text-muted-foreground",
-                        isEditMode && "cursor-pointer hover:text-primary transition-colors"
-                      )}
-                      onClick={isEditMode ? handleStartEditSubtitle : undefined}
-                    >
-                      {dashboardConfig.subtitle}
-                      {isEditMode && (
-                        <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
-                      )}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <p 
+                        className={cn(
+                          "text-muted-foreground",
+                          isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                        )}
+                        onClick={isEditMode ? handleStartEditSubtitle : undefined}
+                      >
+                        {dashboardConfig.subtitle}
+                        {isEditMode && (
+                          <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
+                        )}
+                      </p>
+                      <div className="text-sm font-mono text-muted-foreground/70">
+                        {currentTime}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
               
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {dashboardConfig.networkCheckEnabled && (
-                    <div className="flex items-center gap-2">
-                      <Activity 
-                        className={cn(
-                          "h-4 w-4", 
-                          isOnline 
-                            ? "text-green-500 animate-pulse" 
-                            : "text-red-500 animate-[blink_1s_linear_infinite]"
-                        )} 
-                      />
-                      <span className={isOnline ? "text-green-500" : "text-red-500"}>
-                        {isOnline ? "Online" : "Offline"}
+                {dashboardConfig.networkCheckEnabled && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Activity 
+                      className={cn(
+                        "h-4 w-4", 
+                        isOnline 
+                          ? "text-green-500 animate-pulse" 
+                          : "text-red-500 animate-[blink_1s_linear_infinite]"
+                      )} 
+                    />
+                    <span className={isOnline ? "text-green-500" : "text-red-500"}>
+                      {isOnline ? "Online" : "Offline"}
+                    </span>
+                    {lastPingTime && isOnline && (
+                      <span className="text-xs text-muted-foreground/70">
+                        • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
-                      {lastPingTime && isOnline && (
-                        <span className="text-xs text-muted-foreground/70">
-                          • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <div className="font-mono">
-                    {currentTime}
+                    )}
                   </div>
-                </div>
+                )}
                 
                 {/* Edit button - only show when not in edit mode */}
                 {!isEditMode && (
