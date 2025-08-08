@@ -573,10 +573,10 @@ const NetworkDashboard = () => {
                   </span>
                 </div>
                 
-                 {/* Control buttons - responsive grid */}
+                 {/* Control buttons - responsive layout */}
                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                   {/* First column - Network controls */}
-                   <div className="flex flex-col gap-3">
+                   {/* Mobile layout - all toggles in column */}
+                   <div className="flex flex-col gap-3 sm:hidden">
                      {/* Network check toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
@@ -594,24 +594,6 @@ const NetworkDashboard = () => {
                        </TooltipContent>
                      </Tooltip>
 
-                     {/* Theme toggle - desktop only, under network check */}
-                     <div className="hidden sm:block">
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                           <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                             <span className="text-sm text-muted-foreground">Theme</span>
-                             <ThemeToggle />
-                           </div>
-                         </TooltipTrigger>
-                         <TooltipContent>
-                           <p>Switch between light and dark mode</p>
-                         </TooltipContent>
-                       </Tooltip>
-                     </div>
-                   </div>
-                   
-                   {/* Second column - HTTP and Theme (mobile) */}
-                   <div className="flex flex-col gap-3">
                      {/* Local HTTP toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
@@ -629,20 +611,68 @@ const NetworkDashboard = () => {
                        </TooltipContent>
                      </Tooltip>
 
-                     {/* Theme toggle - mobile only */}
-                     <div className="block sm:hidden">
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                           <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                             <span className="text-sm text-muted-foreground">Theme</span>
-                             <ThemeToggle />
-                           </div>
-                         </TooltipTrigger>
-                         <TooltipContent>
-                           <p>Switch between light and dark mode</p>
-                         </TooltipContent>
-                       </Tooltip>
-                     </div>
+                     {/* Theme toggle */}
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                           <span className="text-sm text-muted-foreground">Theme</span>
+                           <ThemeToggle />
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Switch between light and dark mode</p>
+                       </TooltipContent>
+                     </Tooltip>
+                   </div>
+                   
+                   {/* Desktop/Tablet layout - all toggles in one column */}
+                   <div className="hidden sm:flex flex-col gap-3">
+                     {/* Network check toggle */}
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                           <Wifi className="h-4 w-4 text-muted-foreground" />
+                           <span className="text-sm text-muted-foreground">Network Check</span>
+                           <Switch 
+                             checked={dashboardConfig.networkCheckEnabled}
+                             onCheckedChange={toggleNetworkCheck}
+                           />
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Enable/disable connectivity monitoring for apps</p>
+                       </TooltipContent>
+                     </Tooltip>
+
+                     {/* Theme toggle */}
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                           <span className="text-sm text-muted-foreground">Theme</span>
+                           <ThemeToggle />
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Switch between light and dark mode</p>
+                       </TooltipContent>
+                     </Tooltip>
+
+                     {/* Local HTTP toggle */}
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                           <Server className="h-4 w-4 text-muted-foreground" />
+                           <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                           <Switch 
+                             checked={dashboardConfig.assumeLocalHttpOnline ?? false}
+                             onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
+                           />
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                       </TooltipContent>
+                     </Tooltip>
                    </div>
                   
                    {/* Action buttons */}
