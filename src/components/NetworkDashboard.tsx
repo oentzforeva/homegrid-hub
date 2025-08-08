@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi, Download, Upload, Image } from "lucide-react";
+import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { checkConnectivity, checkInternetConnectivity, ConnectivityResult } from "@/lib/connectivity";
@@ -335,7 +336,8 @@ const NetworkDashboard = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-bg">
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-bg">
       <div className="container mx-auto px-6 py-8">
         <header className="mb-12">
           <div className="flex flex-col gap-4 mb-6">
@@ -403,11 +405,11 @@ const NetworkDashboard = () => {
                       />
                     ) : null}
                     <Server className={cn("h-8 w-8 text-primary fallback-icon", dashboardConfig.headerIcon && "hidden")} />
-                    {isEditMode && (
-                      <div className="absolute -top-1 -right-1 bg-accent/20 rounded-full p-1">
-                        <Image className="h-3 w-3 text-accent" />
-                      </div>
-                    )}
+                     {isEditMode && (
+                       <div className="absolute -top-1 -right-1 bg-accent/20 rounded-full p-1">
+                         <Edit className="h-3 w-3 text-accent" />
+                       </div>
+                     )}
                   </div>
                 )}
                 <div className="flex-1">
@@ -540,48 +542,76 @@ const NetworkDashboard = () => {
                   </span>
                 </div>
                 
-                {/* Control buttons - responsive grid */}
-                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                  {/* Network check toggle */}
-                  <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                    <Wifi className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Network Check</span>
-                    <Switch 
-                      checked={dashboardConfig.networkCheckEnabled}
-                      onCheckedChange={toggleNetworkCheck}
-                    />
-                  </div>
+                 {/* Control buttons - responsive grid */}
+                 <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                   {/* Network check toggle */}
+                   <Tooltip>
+                     <TooltipTrigger asChild>
+                       <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                         <Wifi className="h-4 w-4 text-muted-foreground" />
+                         <span className="text-sm text-muted-foreground">Network Check</span>
+                         <Switch 
+                           checked={dashboardConfig.networkCheckEnabled}
+                           onCheckedChange={toggleNetworkCheck}
+                         />
+                       </div>
+                     </TooltipTrigger>
+                     <TooltipContent>
+                       <p>Enable/disable connectivity monitoring for apps</p>
+                     </TooltipContent>
+                   </Tooltip>
+                   
+                   {/* Local HTTP toggle */}
+                   <Tooltip>
+                     <TooltipTrigger asChild>
+                       <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                         <Server className="h-4 w-4 text-muted-foreground" />
+                         <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                         <Switch 
+                           checked={dashboardConfig.assumeLocalHttpOnline ?? false}
+                           onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
+                         />
+                       </div>
+                     </TooltipTrigger>
+                     <TooltipContent>
+                       <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                     </TooltipContent>
+                   </Tooltip>
                   
-                  {/* Local HTTP toggle */}
-                  <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                    <Server className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
-                    <Switch 
-                      checked={dashboardConfig.assumeLocalHttpOnline ?? false}
-                      onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
-                    />
-                  </div>
-                  
-                  {/* Action buttons */}
-                  <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleExportConfig}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Export
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleImportConfig}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <Upload className="h-4 w-4" />
-                      Import
-                    </Button>
+                   {/* Action buttons */}
+                   <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={handleExportConfig}
+                           className="flex items-center justify-center gap-2"
+                         >
+                           <Download className="h-4 w-4" />
+                           Export
+                         </Button>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Export dashboard config as JSON file</p>
+                       </TooltipContent>
+                     </Tooltip>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={handleImportConfig}
+                           className="flex items-center justify-center gap-2"
+                         >
+                           <Upload className="h-4 w-4" />
+                           Import
+                         </Button>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Import dashboard config from JSON file</p>
+                       </TooltipContent>
+                     </Tooltip>
                     <Button
                       variant="outline"
                       size="sm"
@@ -721,7 +751,8 @@ const NetworkDashboard = () => {
           onAdd={handleAddApp}
         />
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
 
