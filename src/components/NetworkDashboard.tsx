@@ -580,9 +580,11 @@ const NetworkDashboard = () => {
                      {/* Network check toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                           <Wifi className="h-4 w-4 text-muted-foreground" />
-                           <span className="text-sm text-muted-foreground">Network Check</span>
+                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center gap-2">
+                             <Wifi className="h-4 w-4 text-muted-foreground" />
+                             <span className="text-sm text-muted-foreground">Network Check</span>
+                           </div>
                            <Switch 
                              checked={dashboardConfig.networkCheckEnabled}
                              onCheckedChange={toggleNetworkCheck}
@@ -597,9 +599,11 @@ const NetworkDashboard = () => {
                      {/* Local HTTP toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                           <Server className="h-4 w-4 text-muted-foreground" />
-                           <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center gap-2">
+                             <Server className="h-4 w-4 text-muted-foreground" />
+                             <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                           </div>
                            <Switch 
                              checked={dashboardConfig.assumeLocalHttpOnline ?? false}
                              onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
@@ -614,8 +618,10 @@ const NetworkDashboard = () => {
                      {/* Theme toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                           <span className="text-sm text-muted-foreground">Theme</span>
+                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center gap-2">
+                             <span className="text-sm text-muted-foreground">Theme</span>
+                           </div>
                            <ThemeToggle />
                          </div>
                        </TooltipTrigger>
@@ -630,9 +636,11 @@ const NetworkDashboard = () => {
                      {/* Network check toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                           <Wifi className="h-4 w-4 text-muted-foreground" />
-                           <span className="text-sm text-muted-foreground">Network Check</span>
+                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center gap-2">
+                             <Wifi className="h-4 w-4 text-muted-foreground" />
+                             <span className="text-sm text-muted-foreground">Network Check</span>
+                           </div>
                            <Switch 
                              checked={dashboardConfig.networkCheckEnabled}
                              onCheckedChange={toggleNetworkCheck}
@@ -647,8 +655,10 @@ const NetworkDashboard = () => {
                      {/* Theme toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                           <span className="text-sm text-muted-foreground">Theme</span>
+                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center gap-2">
+                             <span className="text-sm text-muted-foreground">Theme</span>
+                           </div>
                            <ThemeToggle />
                          </div>
                        </TooltipTrigger>
@@ -660,9 +670,11 @@ const NetworkDashboard = () => {
                      {/* Local HTTP toggle */}
                      <Tooltip>
                        <TooltipTrigger asChild>
-                         <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                           <Server className="h-4 w-4 text-muted-foreground" />
-                           <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center gap-2">
+                             <Server className="h-4 w-4 text-muted-foreground" />
+                             <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                           </div>
                            <Switch 
                              checked={dashboardConfig.assumeLocalHttpOnline ?? false}
                              onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
