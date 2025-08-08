@@ -598,21 +598,6 @@ const NetworkDashboard = () => {
                          </TooltipContent>
                        </Tooltip>
 
-                       {/* Theme toggle */}
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
-                             <div className="flex items-center gap-2">
-                               <span className="text-sm text-muted-foreground">Theme</span>
-                             </div>
-                             <ThemeToggle />
-                           </div>
-                         </TooltipTrigger>
-                         <TooltipContent>
-                           <p>Switch between light and dark mode</p>
-                         </TooltipContent>
-                       </Tooltip>
-
                        {/* Local HTTP toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
@@ -629,6 +614,21 @@ const NetworkDashboard = () => {
                          </TooltipTrigger>
                          <TooltipContent>
                            <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                         </TooltipContent>
+                       </Tooltip>
+
+                       {/* Theme toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
+                             <div className="flex items-center gap-2">
+                               <span className="text-sm text-muted-foreground">Theme</span>
+                             </div>
+                             <ThemeToggle />
+                           </div>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Switch between light and dark mode</p>
                          </TooltipContent>
                        </Tooltip>
                      </div>
@@ -654,22 +654,7 @@ const NetworkDashboard = () => {
                          </TooltipContent>
                        </Tooltip>
 
-                        {/* Theme toggle */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">Theme</span>
-                              </div>
-                              <ThemeToggle />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Switch between light and dark mode</p>
-                          </TooltipContent>
-                        </Tooltip>
-
-                        {/* Assume Local HTTP Online toggle */}
+                        {/* Local HTTP toggle */}
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
@@ -685,6 +670,21 @@ const NetworkDashboard = () => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Theme toggle */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">Theme</span>
+                              </div>
+                              <ThemeToggle />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Switch between light and dark mode</p>
                           </TooltipContent>
                         </Tooltip>
                      </div>
