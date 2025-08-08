@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Server, Activity, Edit, Plus, RotateCcw, Save, Check, X, Wifi, Download, Upload } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -591,22 +592,35 @@ const NetworkDashboard = () => {
                      </TooltipContent>
                    </Tooltip>
                    
-                   {/* Local HTTP toggle */}
-                   <Tooltip>
-                     <TooltipTrigger asChild>
-                       <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                         <Server className="h-4 w-4 text-muted-foreground" />
-                         <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
-                         <Switch 
-                           checked={dashboardConfig.assumeLocalHttpOnline ?? false}
-                           onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
-                         />
-                       </div>
-                     </TooltipTrigger>
-                     <TooltipContent>
-                       <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
-                     </TooltipContent>
-                   </Tooltip>
+                    {/* Local HTTP toggle */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                          <Server className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                          <Switch 
+                            checked={dashboardConfig.assumeLocalHttpOnline ?? false}
+                            onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    {/* Theme toggle */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                          <span className="text-sm text-muted-foreground">Theme</span>
+                          <ThemeToggle />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Switch between light and dark mode</p>
+                      </TooltipContent>
+                    </Tooltip>
                   
                    {/* Action buttons */}
                    <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
