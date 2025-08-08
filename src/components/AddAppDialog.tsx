@@ -83,172 +83,180 @@ setFormData({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
           <DialogTitle className="flex items-center gap-2">
             <Plus className="h-5 w-5" />
             Add New App
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="add-name">App Name *</Label>
-            <Input
-              id="add-name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter app name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="add-description">Description</Label>
-            <Textarea
-              id="add-description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Enter app description"
-              rows={2}
-            />
-          </div>
-
-<div className="space-y-2">
-  <Label htmlFor="add-url">URL *</Label>
-  <Input
-    id="add-url"
-    type="url"
-    value={formData.url}
-    onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-    placeholder="https://example.com"
-  />
-</div>
-
-<div className="flex items-center justify-between rounded-md border border-border p-3">
-  <div>
-    <Label>Connectivity check</Label>
-    <p className="text-xs text-muted-foreground">Show online/offline for this app</p>
-  </div>
-  <Switch
-    checked={formData.networkCheckEnabled}
-    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, networkCheckEnabled: checked }))}
-  />
-</div>
-
-          <div className="space-y-2">
-            <Label>Accent Color</Label>
-            <div className="grid grid-cols-4 gap-2">
-              {predefinedColors.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`w-full h-8 rounded border-2 transition-all ${
-                    formData.accentColor === color 
-                      ? 'border-primary scale-105' 
-                      : 'border-border hover:border-muted-foreground'
-                  }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setFormData(prev => ({ ...prev, accentColor: color }))}
-                />
-              ))}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="add-name">App Name *</Label>
+              <Input
+                id="add-name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter app name"
+              />
             </div>
-            <Input
-              value={formData.accentColor}
-              onChange={(e) => setFormData(prev => ({ ...prev, accentColor: e.target.value }))}
-              placeholder="hsl(217, 91%, 60%)"
-              className="text-xs"
-            />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="add-icon">Icon URL (optional)</Label>
-            <Input
-              id="add-icon"
-              type="url"
-              value={formData.icon}
-              onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
-              placeholder="https://example.com/icon.png"
-            />
-            <p className="text-xs text-muted-foreground">
-              Leave empty to use a default circuit board icon
-            </p>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="add-description">Description</Label>
+              <Textarea
+                id="add-description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter app description"
+                rows={2}
+              />
+            </div>
 
-          <div className="space-y-4 border-t border-border pt-4">
-            <h4 className="text-sm font-medium text-foreground">App Specification</h4>
+            <div className="space-y-2">
+              <Label htmlFor="add-url">URL *</Label>
+              <Input
+                id="add-url"
+                type="url"
+                value={formData.url}
+                onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-md border border-border p-3">
+              <div>
+                <Label>Connectivity check</Label>
+                <p className="text-xs text-muted-foreground">Show online/offline for this app</p>
+              </div>
+              <Switch
+                checked={formData.networkCheckEnabled}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, networkCheckEnabled: checked }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Accent Color</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {predefinedColors.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`w-full h-8 rounded border-2 transition-all ${
+                      formData.accentColor === color 
+                        ? 'border-primary scale-105' 
+                        : 'border-border hover:border-muted-foreground'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setFormData(prev => ({ ...prev, accentColor: color }))}
+                  />
+                ))}
+              </div>
+              <Input
+                value={formData.accentColor}
+                onChange={(e) => setFormData(prev => ({ ...prev, accentColor: e.target.value }))}
+                placeholder="hsl(217, 91%, 60%)"
+                className="text-xs"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="add-icon">Icon URL (optional)</Label>
+              <Input
+                id="add-icon"
+                type="url"
+                value={formData.icon}
+                onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
+                placeholder="https://example.com/icon.png"
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave empty to use a default circuit board icon
+              </p>
+            </div>
+
+            <div className="space-y-4 border-t border-border pt-4">
+              <h4 className="text-sm font-medium text-foreground">App Specification</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="add-category">Category</Label>
+                  <Input
+                    id="add-category"
+                    value={formData.specification.category}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      specification: { ...prev.specification, category: e.target.value }
+                    }))}
+                    placeholder="e.g., Network Management"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="add-vendor">Vendor</Label>
+                  <Input
+                    id="add-vendor"
+                    value={formData.specification.vendor}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      specification: { ...prev.specification, vendor: e.target.value }
+                    }))}
+                    placeholder="e.g., Ubiquiti"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="add-type">Type</Label>
+                  <Input
+                    id="add-type"
+                    value={formData.specification.type}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      specification: { ...prev.specification, type: e.target.value }
+                    }))}
+                    placeholder="e.g., Web Application"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="add-protocol">Protocol</Label>
+                  <Input
+                    id="add-protocol"
+                    value={formData.specification.protocol}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      specification: { ...prev.specification, protocol: e.target.value }
+                    }))}
+                    placeholder="e.g., HTTPS"
+                  />
+                </div>
+              </div>
+            </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="add-category">Category</Label>
-                <Input
-                  id="add-category"
-                  value={formData.specification.category}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    specification: { ...prev.specification, category: e.target.value }
-                  }))}
-                  placeholder="e.g., Network Management"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="add-vendor">Vendor</Label>
-                <Input
-                  id="add-vendor"
-                  value={formData.specification.vendor}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    specification: { ...prev.specification, vendor: e.target.value }
-                  }))}
-                  placeholder="e.g., Ubiquiti"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="add-type">Type</Label>
-                <Input
-                  id="add-type"
-                  value={formData.specification.type}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    specification: { ...prev.specification, type: e.target.value }
-                  }))}
-                  placeholder="e.g., Web Application"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="add-protocol">Protocol</Label>
-                <Input
-                  id="add-protocol"
-                  value={formData.specification.protocol}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    specification: { ...prev.specification, protocol: e.target.value }
-                  }))}
-                  placeholder="e.g., HTTPS"
-                />
-              </div>
-            </div>
+            {/* Extra padding at bottom for mobile safe area */}
+            <div className="pb-4" />
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="flex items-center gap-2"
-          >
-            <X className="h-4 w-4" />
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAdd}
-            className="flex items-center gap-2"
-          >
-            <Save className="h-4 w-4" />
-            Add App
-          </Button>
+        {/* Sticky footer */}
+        <div className="border-t border-border px-6 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2"
+            >
+              <X className="h-4 w-4" />
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAdd}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Add App
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

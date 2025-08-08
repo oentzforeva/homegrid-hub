@@ -455,7 +455,8 @@ const NetworkDashboard = () => {
               <div className="flex items-center gap-2">
                 {isEditMode && (
                   <>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                    {/* Network Check - visible on larger screens */}
+                    <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
                       <Wifi className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Network Check</span>
                       <Switch 
@@ -463,42 +464,46 @@ const NetworkDashboard = () => {
                         onCheckedChange={toggleNetworkCheck}
                       />
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleExportConfig}
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Export
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleImportConfig}
-                      className="flex items-center gap-2"
-                    >
-                      <Upload className="h-4 w-4" />
-                      Import
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAddDialog(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add App
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleResetApps}
-                      className="flex items-center gap-2"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                      Reset All
-                    </Button>
+                    
+                    {/* Action buttons - responsive layout */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleExportConfig}
+                        className="flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span className="hidden sm:inline">Export</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleImportConfig}
+                        className="flex items-center gap-2"
+                      >
+                        <Upload className="h-4 w-4" />
+                        <span className="hidden sm:inline">Import</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAddDialog(true)}
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span className="hidden sm:inline">Add App</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleResetApps}
+                        className="flex items-center gap-2"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                        <span className="hidden sm:inline">Reset</span>
+                      </Button>
+                    </div>
                   </>
                 )}
                 <Button
@@ -523,13 +528,27 @@ const NetworkDashboard = () => {
             </div>
           </div>
 
-          {/* Status indicators */}
+          {/* Status indicators and mobile network settings */}
           {isEditMode && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-              <Edit className="w-4 h-4 text-accent" />
-              <span className="text-sm text-accent font-medium">
-                Edit Mode - Click apps to modify • Click title/subtitle to edit
-              </span>
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                <Edit className="w-4 h-4 text-accent" />
+                <span className="text-sm text-accent font-medium">
+                  Edit Mode - Click apps to modify • Click title/subtitle to edit
+                </span>
+              </div>
+              
+              {/* Mobile network check toggle */}
+              <div className="lg:hidden">
+                <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg w-fit">
+                  <Wifi className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Network Check</span>
+                  <Switch 
+                    checked={dashboardConfig.networkCheckEnabled}
+                    onCheckedChange={toggleNetworkCheck}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </header>
