@@ -318,12 +318,12 @@ const NetworkDashboard = () => {
         <header className="mb-12">
           <div className="flex flex-col gap-4 mb-6">
             {/* Main header content */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-card rounded-xl border border-border shadow-card">
                   <Server className="h-8 w-8 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   {/* Editable Title */}
                   {isEditMode && isEditingTitle ? (
                     <div className="flex items-center gap-2">
@@ -347,19 +347,19 @@ const NetworkDashboard = () => {
                   ) : (
                     <h1 
                       className={cn(
-                        "text-3xl font-bold text-foreground",
+                        "text-2xl sm:text-3xl font-bold text-foreground",
                         isEditMode && "cursor-pointer hover:text-primary transition-colors"
                       )}
                       onClick={isEditMode ? handleStartEditTitle : undefined}
                     >
                       {dashboardConfig.title}
                       {isEditMode && (
-                        <Edit className="inline ml-2 h-5 w-5 text-muted-foreground" />
+                        <Edit className="inline ml-2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                       )}
                     </h1>
                   )}
 
-                  {/* Editable Subtitle with current time */}
+                  {/* Editable Subtitle with current time - mobile responsive */}
                   {isEditMode && isEditingSubtitle ? (
                     <div className="flex items-center gap-2 mt-1">
                       <Input
@@ -380,10 +380,10 @@ const NetworkDashboard = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between mt-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-1 gap-2 sm:gap-4">
                       <p 
                         className={cn(
-                          "text-muted-foreground",
+                          "text-sm sm:text-base text-muted-foreground",
                           isEditMode && "cursor-pointer hover:text-primary transition-colors"
                         )}
                         onClick={isEditMode ? handleStartEditSubtitle : undefined}
@@ -393,7 +393,7 @@ const NetworkDashboard = () => {
                           <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
                         )}
                       </p>
-                      <span className="text-sm text-muted-foreground/70 ml-4">
+                      <span className="text-xs sm:text-sm text-muted-foreground/70 self-start sm:self-auto">
                         {currentTime}
                       </span>
                     </div>
@@ -401,10 +401,11 @@ const NetworkDashboard = () => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-4">
+              {/* Status and controls - mobile responsive */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                 {/* Internet connectivity status */}
                 {dashboardConfig.networkCheckEnabled && (
-                  <div className="flex flex-col items-end gap-1">
+                  <div className="flex flex-col items-start sm:items-end gap-1">
                     <div className="flex items-center gap-2 text-sm">
                       <Activity 
                         className={cn(
@@ -432,7 +433,7 @@ const NetworkDashboard = () => {
                     variant="outline"
                     size="sm"
                     onClick={toggleEditMode}
-                    className="flex items-center gap-2 ml-auto"
+                    className="flex items-center gap-2 self-start sm:self-auto"
                   >
                     <Edit className="h-4 w-4" />
                     Edit
