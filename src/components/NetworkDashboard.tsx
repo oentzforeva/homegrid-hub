@@ -359,7 +359,7 @@ const NetworkDashboard = () => {
                     </h1>
                   )}
 
-                  {/* Editable Subtitle */}
+                  {/* Editable Subtitle with current time */}
                   {isEditMode && isEditingSubtitle ? (
                     <div className="flex items-center gap-2 mt-1">
                       <Input
@@ -380,44 +380,47 @@ const NetworkDashboard = () => {
                       </Button>
                     </div>
                   ) : (
-                    <p 
-                      className={cn(
-                        "text-muted-foreground flex items-center gap-3",
-                        isEditMode && "cursor-pointer hover:text-primary transition-colors"
-                      )}
-                      onClick={isEditMode ? handleStartEditSubtitle : undefined}
-                    >
-                      <span>
+                    <div className="flex items-center justify-between mt-1">
+                      <p 
+                        className={cn(
+                          "text-muted-foreground",
+                          isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                        )}
+                        onClick={isEditMode ? handleStartEditSubtitle : undefined}
+                      >
                         {dashboardConfig.subtitle}
                         {isEditMode && (
                           <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
                         )}
-                      </span>
-                      <span className="text-muted-foreground/70">
+                      </p>
+                      <span className="text-sm text-muted-foreground/70 ml-4">
                         {currentTime}
                       </span>
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>
               
               <div className="flex items-center gap-4">
+                {/* Internet connectivity status */}
                 {dashboardConfig.networkCheckEnabled && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Activity 
-                      className={cn(
-                        "h-4 w-4", 
-                        isOnline 
-                          ? "text-green-500 animate-pulse" 
-                          : "text-red-500 animate-[blink_1s_linear_infinite]"
-                      )} 
-                    />
-                    <span className={isOnline ? "text-green-500" : "text-red-500"}>
-                      {isOnline ? "Online" : "Offline"}
-                    </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Activity 
+                        className={cn(
+                          "h-4 w-4", 
+                          isOnline 
+                            ? "text-green-500 animate-pulse" 
+                            : "text-red-500 animate-[blink_1s_linear_infinite]"
+                        )} 
+                      />
+                      <span className={cn("font-medium", isOnline ? "text-green-500" : "text-red-500")}>
+                        Internet {isOnline ? "Online" : "Offline"}
+                      </span>
+                    </div>
                     {lastPingTime && isOnline && (
                       <span className="text-xs text-muted-foreground/70">
-                        • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     )}
                   </div>
@@ -429,7 +432,7 @@ const NetworkDashboard = () => {
                     variant="outline"
                     size="sm"
                     onClick={toggleEditMode}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 ml-auto"
                   >
                     <Edit className="h-4 w-4" />
                     Edit
