@@ -454,25 +454,18 @@ const NetworkDashboard = () => {
                   </div>
                 </div>
                 
-                {/* Main Edit/Done button - always visible */}
-                <Button
-                  variant={isEditMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={toggleEditMode}
-                  className="flex items-center gap-2"
-                >
-                  {isEditMode ? (
-                    <>
-                      <Save className="h-4 w-4" />
-                      Done
-                    </>
-                  ) : (
-                    <>
-                      <Edit className="h-4 w-4" />
-                      Edit
-                    </>
-                  )}
-                </Button>
+                {/* Edit button - only show when not in edit mode */}
+                {!isEditMode && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleEditMode}
+                    className="flex items-center gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -538,6 +531,17 @@ const NetworkDashboard = () => {
                       Reset All
                     </Button>
                   </div>
+                  
+                  {/* Done button - separate on mobile for better UX */}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={toggleEditMode}
+                    className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                  >
+                    <Save className="h-4 w-4" />
+                    Done
+                  </Button>
                 </div>
               </div>
             )}
