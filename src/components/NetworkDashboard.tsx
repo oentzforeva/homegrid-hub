@@ -45,6 +45,7 @@ const NetworkDashboard = () => {
     importConfiguration
   } = useAppConfig();
   const { toast } = useToast();
+  const [, setTimeUpdateTrigger] = useState(0); // State to trigger re-renders for time updates
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   console.log('NetworkDashboard render - apps:', apps.length, 'loading:', isLoading);
@@ -72,8 +73,7 @@ const NetworkDashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       // Force re-render to update relative time display
-      // This is done by updating a dummy state that doesn't affect anything else
-      setIsOnline(prev => prev);
+      setTimeUpdateTrigger(prev => prev + 1);
     }, 10000); // Update every 10 seconds
 
     return () => clearInterval(interval);
