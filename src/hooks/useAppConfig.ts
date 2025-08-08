@@ -28,14 +28,23 @@ export const useAppConfig = () => {
         console.log('Loading apps from localStorage:', storedApps);
         if (storedApps) {
           const parsedApps = JSON.parse(storedApps);
-          if (Array.isArray(parsedApps)) {
-            // Validate each app configuration
-            const validApps = parsedApps.filter(app => ConfigManager.validateAppConfig(app));
-            console.log('Valid apps found:', validApps);
-            setApps(validApps.length > 0 ? validApps : defaultApps);
-          } else {
-            setApps(defaultApps);
-          }
+      if (Array.isArray(parsedApps)) {
+        // Validate each app configuration
+        const validApps = parsedApps.filter(app => ConfigManager.validateAppConfig(app));
+        console.log('Valid apps found:', validApps);
+        const sourceApps = validApps.length > 0 ? validApps : defaultApps;
+        const normalizedApps = sourceApps.map(app => ({
+          ...app,
+          networkCheckEnabled: app.networkCheckEnabled ?? true,
+        }));
+        setApps(normalizedApps);
+      } else {
+        const normalizedDefaults = defaultApps.map(app => ({
+          ...app,
+          networkCheckEnabled: app.networkCheckEnabled ?? true,
+        }));
+        setApps(normalizedDefaults);
+      }
         } else {
           console.log('No stored apps found, using defaults');
           setApps(defaultApps);
@@ -101,16 +110,17 @@ export const useAppConfig = () => {
   /**
    * Add a new app configuration
    */
-  const addApp = (appData: Omit<AppConfig, "id" | "lastModified" | "isCustom">) => {
-    const newApp: AppConfig = {
-      ...appData,
-      id: `app-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      lastModified: new Date().toISOString(),
-      isCustom: true
-    };
-    setApps(prev => [...prev, newApp]);
-    return newApp.id;
+const addApp = (appData: Omit<AppConfig, "id" | "lastModified" | "isCustom">) => {
+  const newApp: AppConfig = {
+    ...appData,
+    networkCheckEnabled: appData.networkCheckEnabled ?? true,
+    id: `app-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    lastModified: new Date().toISOString(),
+    isCustom: true
   };
+  setApps(prev => [...prev, newApp]);
+  return newApp.id;
+};
 
   /**
    * Update an existing app configuration

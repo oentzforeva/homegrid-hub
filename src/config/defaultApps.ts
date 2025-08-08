@@ -16,6 +16,7 @@ export const defaultApps: AppConfig[] = [
     icon: unifiNetworkIcon,
     accentColor: "hsl(217, 91%, 60%)",
     url: "https://unifi.ui.com",
+    networkCheckEnabled: true,
     specification: {
       category: "Network Management",
       vendor: "Ubiquiti",
@@ -30,6 +31,7 @@ export const defaultApps: AppConfig[] = [
     icon: unifiProtectIcon,
     accentColor: "hsl(217, 91%, 60%)",
     url: "https://protect.ui.com",
+    networkCheckEnabled: true,
     specification: {
       category: "Security & Surveillance",
       vendor: "Ubiquiti",
@@ -44,6 +46,7 @@ export const defaultApps: AppConfig[] = [
     icon: homeassistantIcon,
     accentColor: "hsl(199, 89%, 48%)",
     url: "https://home-assistant.io",
+    networkCheckEnabled: true,
     specification: {
       category: "Home Automation",
       vendor: "Home Assistant",
@@ -58,6 +61,7 @@ export const defaultApps: AppConfig[] = [
     icon: synologyIcon,
     accentColor: "hsl(25, 95%, 53%)",
     url: "https://synology.com",
+    networkCheckEnabled: true,
     specification: {
       category: "Storage & NAS",
       vendor: "Synology",
@@ -72,6 +76,7 @@ export const defaultApps: AppConfig[] = [
     icon: plexIcon,
     accentColor: "hsl(45, 93%, 58%)",
     url: "https://plex.tv",
+    networkCheckEnabled: true,
     specification: {
       category: "Media & Entertainment",
       vendor: "Plex Inc.",
@@ -86,6 +91,7 @@ export const defaultApps: AppConfig[] = [
     icon: paperlessIcon,
     accentColor: "hsl(142, 76%, 36%)",
     url: "https://paperless-ngx.readthedocs.io",
+    networkCheckEnabled: true,
     specification: {
       category: "Document Management",
       vendor: "Paperless-NGX",

@@ -115,7 +115,7 @@ const NetworkDashboard = () => {
 
   // Check all apps connectivity
   const checkAllAppsConnectivity = async () => {
-    const appsWithUrls = apps.filter(app => app.url);
+    const appsWithUrls = apps.filter(app => app.url && (app.networkCheckEnabled ?? true));
     await Promise.all(appsWithUrls.map(checkAppConnectivity));
   };
 
@@ -546,7 +546,7 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
-                isOnline={dashboardConfig.networkCheckEnabled ? appStatuses[app.id] : undefined}
+                isOnline={dashboardConfig.networkCheckEnabled && (app.networkCheckEnabled ?? true) ? appStatuses[app.id] : undefined}
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}

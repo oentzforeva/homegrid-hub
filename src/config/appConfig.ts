@@ -44,6 +44,8 @@ export interface AppConfig {
   accentColor: string;
   /** Application URL */
   url: string;
+  /** Whether connectivity check is enabled for this app (defaults to true) */
+  networkCheckEnabled?: boolean;
   /** Detailed app specification */
   specification: AppSpecification;
   /** Optional extended color scheme */

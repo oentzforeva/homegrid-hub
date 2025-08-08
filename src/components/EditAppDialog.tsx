@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Trash2, Save, X } from "lucide-react";
 import { AppConfig } from "@/hooks/useAppConfig";
 
@@ -22,6 +23,7 @@ const EditAppDialog = ({ app, open, onOpenChange, onSave, onDelete }: EditAppDia
     url: "",
     accentColor: "",
     icon: "",
+    networkCheckEnabled: true,
     specification: {
       category: "",
       vendor: "",
@@ -30,23 +32,24 @@ const EditAppDialog = ({ app, open, onOpenChange, onSave, onDelete }: EditAppDia
     }
   });
 
-  useEffect(() => {
-    if (app) {
-      setFormData({
-        name: app.name,
-        description: app.description,
-        url: app.url,
-        accentColor: app.accentColor,
-        icon: app.icon,
-        specification: {
-          category: app.specification?.category || "",
-          vendor: app.specification?.vendor || "",
-          type: app.specification?.type || "Web Application",
-          protocol: app.specification?.protocol || "HTTPS"
-        }
-      });
-    }
-  }, [app]);
+useEffect(() => {
+  if (app) {
+    setFormData({
+      name: app.name,
+      description: app.description,
+      url: app.url,
+      accentColor: app.accentColor,
+      icon: app.icon,
+      networkCheckEnabled: app.networkCheckEnabled ?? true,
+      specification: {
+        category: app.specification?.category || "",
+        vendor: app.specification?.vendor || "",
+        type: app.specification?.type || "Web Application",
+        protocol: app.specification?.protocol || "HTTPS"
+      }
+    });
+  }
+}, [app]);
 
   const handleSave = () => {
     if (!app) return;
@@ -98,16 +101,27 @@ const EditAppDialog = ({ app, open, onOpenChange, onSave, onDelete }: EditAppDia
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="url">URL</Label>
-            <Input
-              id="url"
-              type="url"
-              value={formData.url}
-              onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-              placeholder="https://example.com"
-            />
-          </div>
+<div className="space-y-2">
+  <Label htmlFor="url">URL</Label>
+  <Input
+    id="url"
+    type="url"
+    value={formData.url}
+    onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+    placeholder="https://example.com"
+  />
+</div>
+
+<div className="flex items-center justify-between rounded-md border border-border p-3">
+  <div>
+    <Label>Connectivity check</Label>
+    <p className="text-xs text-muted-foreground">Show online/offline for this app</p>
+  </div>
+  <Switch
+    checked={formData.networkCheckEnabled}
+    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, networkCheckEnabled: checked }))}
+  />
+</div>
 
           <div className="space-y-2">
             <Label htmlFor="accentColor">Accent Color (HSL)</Label>

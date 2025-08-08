@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Plus, Save, X } from "lucide-react";
 import { AppConfig } from "@/hooks/useAppConfig";
 
@@ -31,6 +32,7 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
     url: "",
     accentColor: predefinedColors[0],
     icon: "",
+    networkCheckEnabled: true,
     specification: {
       category: "",
       vendor: "",
@@ -45,34 +47,36 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
       return;
     }
 
-    onAdd({
-      name: formData.name.trim(),
-      description: formData.description.trim(),
-      url: formData.url.trim(),
-      accentColor: formData.accentColor,
-      icon: formData.icon.trim() || `https://images.unsplash.com/photo-1518770660439-4636190af475?w=64&h=64&fit=crop&crop=center`,
-      specification: {
-        category: formData.specification.category.trim() || "Custom Application",
-        vendor: formData.specification.vendor.trim() || "Unknown",
-        type: formData.specification.type,
-        protocol: formData.specification.protocol
-      }
-    });
+onAdd({
+  name: formData.name.trim(),
+  description: formData.description.trim(),
+  url: formData.url.trim(),
+  accentColor: formData.accentColor,
+  icon: formData.icon.trim() || `https://images.unsplash.com/photo-1518770660439-4636190af475?w=64&h=64&fit=crop&crop=center`,
+  networkCheckEnabled: formData.networkCheckEnabled,
+  specification: {
+    category: formData.specification.category.trim() || "Custom Application",
+    vendor: formData.specification.vendor.trim() || "Unknown",
+    type: formData.specification.type,
+    protocol: formData.specification.protocol
+  }
+});
 
-    // Reset form
-    setFormData({
-      name: "",
-      description: "",
-      url: "",
-      accentColor: predefinedColors[0],
-      icon: "",
-      specification: {
-        category: "",
-        vendor: "",
-        type: "Web Application",
-        protocol: "HTTPS"
-      }
-    });
+// Reset form
+setFormData({
+  name: "",
+  description: "",
+  url: "",
+  accentColor: predefinedColors[0],
+  icon: "",
+  networkCheckEnabled: true,
+  specification: {
+    category: "",
+    vendor: "",
+    type: "Web Application",
+    protocol: "HTTPS"
+  }
+});
     
     onOpenChange(false);
   };
@@ -109,16 +113,27 @@ const AddAppDialog = ({ open, onOpenChange, onAdd }: AddAppDialogProps) => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="add-url">URL *</Label>
-            <Input
-              id="add-url"
-              type="url"
-              value={formData.url}
-              onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-              placeholder="https://example.com"
-            />
-          </div>
+<div className="space-y-2">
+  <Label htmlFor="add-url">URL *</Label>
+  <Input
+    id="add-url"
+    type="url"
+    value={formData.url}
+    onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+    placeholder="https://example.com"
+  />
+</div>
+
+<div className="flex items-center justify-between rounded-md border border-border p-3">
+  <div>
+    <Label>Connectivity check</Label>
+    <p className="text-xs text-muted-foreground">Show online/offline for this app</p>
+  </div>
+  <Switch
+    checked={formData.networkCheckEnabled}
+    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, networkCheckEnabled: checked }))}
+  />
+</div>
 
           <div className="space-y-2">
             <Label>Accent Color</Label>
