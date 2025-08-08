@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { checkConnectivity, checkInternetConnectivity, ConnectivityResult } from "@/lib/connectivity";
 import AppCard from "./AppCard";
 import EditAppDialog from "./EditAppDialog";
 import AddAppDialog from "./AddAppDialog";
@@ -18,7 +19,7 @@ const NetworkDashboard = () => {
   // Network status state
   const [isOnline, setIsOnline] = useState(true);
   const [lastPingTime, setLastPingTime] = useState<Date | null>(null);
-  const [appStatuses, setAppStatuses] = useState<Record<string, boolean>>({});
+  const [appStatuses, setAppStatuses] = useState<Record<string, ConnectivityResult>>({});
   
   // Dashboard settings state (for inline editing)
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -46,20 +47,12 @@ const NetworkDashboard = () => {
   console.log('NetworkDashboard render - apps:', apps.length, 'loading:', isLoading);
 
   // Network connectivity check function
-  const checkConnectivity = async () => {
+  const checkNetworkConnectivity = async () => {
     try {
-      // Use a reliable endpoint as a proxy for network connectivity
-      // We'll use Google's DNS-over-HTTPS API as it's fast and reliable
-      const response = await fetch('https://dns.google/resolve?name=google.com&type=A', {
-        method: 'GET',
-        signal: AbortSignal.timeout(5000), // 5 second timeout
-      });
-      
-      if (response.ok) {
-        setIsOnline(true);
+      const isConnected = await checkInternetConnectivity();
+      setIsOnline(isConnected);
+      if (isConnected) {
         setLastPingTime(new Date());
-      } else {
-        setIsOnline(false);
       }
     } catch (error) {
       setIsOnline(false);
@@ -67,48 +60,24 @@ const NetworkDashboard = () => {
     }
   };
 
-  // Check individual app connectivity by probing the actual URL
+  // Check individual app connectivity using enhanced checking
   const checkAppConnectivity = async (app: AppConfig) => {
     if (!app.url) return;
     
-    // Normalize URL and handle missing protocol
-    let probeUrl = app.url;
     try {
-      // Validate URL as-is
-      new URL(probeUrl);
-    } catch {
-      try {
-        // Try adding http:// if protocol is missing
-        probeUrl = `http://${probeUrl}`;
-        new URL(probeUrl);
-      } catch {
-        setAppStatuses((prev) => ({ ...prev, [app.id]: false }));
-        console.warn(`Invalid URL for connectivity check: ${app.url}`);
-        return;
+      const result = await checkConnectivity(app.url, { timeout: 5000, retries: 1 });
+      setAppStatuses((prev) => ({ ...prev, [app.id]: result }));
+      
+      if (!result.isReachable) {
+        console.warn(`App connectivity check failed for ${app.name}: ${result.error}`);
       }
-    }
-
-    // Mixed content guard: http target from an https page may be blocked
-    if (window.location.protocol === 'https:' && probeUrl.startsWith('http:')) {
-      console.warn(
-        `Mixed content: attempting to probe an http URL from an https page. The browser may block this request -> ${probeUrl}`
-      );
-    }
-
-    try {
-      // Perform a lightweight HTTP probe. With no-cors, an opaque response still
-      // indicates reachability if the request resolves without throwing.
-      await fetch(probeUrl, {
-        method: 'HEAD',
-        mode: 'no-cors',
-        cache: 'no-store',
-        redirect: 'follow',
-        signal: AbortSignal.timeout(5000),
-      });
-
-      setAppStatuses((prev) => ({ ...prev, [app.id]: true }));
     } catch (error) {
-      setAppStatuses((prev) => ({ ...prev, [app.id]: false }));
+      const failedResult: ConnectivityResult = {
+        isReachable: false,
+        method: 'fallback',
+        error: 'Connectivity check threw an error'
+      };
+      setAppStatuses((prev) => ({ ...prev, [app.id]: failedResult }));
       console.warn(`App connectivity check failed for ${app.name}:`, error);
     }
   };
@@ -124,12 +93,12 @@ const NetworkDashboard = () => {
     if (!dashboardConfig.networkCheckEnabled) return;
     
     // Initial check
-    checkConnectivity();
+    checkNetworkConnectivity();
     checkAllAppsConnectivity();
     
     // Set up interval for every 5 minutes (300,000ms)
     const interval = setInterval(() => {
-      checkConnectivity();
+      checkNetworkConnectivity();
       checkAllAppsConnectivity();
     }, 5 * 60 * 1000);
     
@@ -560,7 +529,7 @@ const NetworkDashboard = () => {
                 accentColor={app.accentColor}
                 url={app.url}
                 isEditMode={isEditMode}
-                isOnline={dashboardConfig.networkCheckEnabled && (app.networkCheckEnabled ?? true) ? appStatuses[app.id] : undefined}
+                isOnline={dashboardConfig.networkCheckEnabled && (app.networkCheckEnabled ?? true) ? appStatuses[app.id]?.isReachable : undefined}
                 onClick={() => handleAppClick(app)}
                 onEdit={() => handleEditApp(app)}
                 onLaunch={() => handleAppLaunch(app.url)}
