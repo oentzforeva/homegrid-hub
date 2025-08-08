@@ -10,93 +10,93 @@ import paperlessIcon from "@/assets/paperless-icon.png";
 
 export const defaultApps: AppConfig[] = [
   {
-    id: "unifi-network",
-    name: "UniFi Network",
-    description: "Network management and monitoring",
+    id: "network-manager",
+    name: "Network Manager",
+    description: "Network infrastructure management",
     icon: unifiNetworkIcon,
     accentColor: "hsl(217, 91%, 60%)",
-    url: "https://unifi.ui.com",
+    url: "https://network.example.local:8443",
     networkCheckEnabled: true,
     specification: {
       category: "Network Management",
-      vendor: "Ubiquiti",
+      vendor: "Example Corp",
       type: "Web Application",
       protocol: "HTTPS"
     }
   },
   {
-    id: "unifi-protect",
-    name: "UniFi Protect",
-    description: "Video surveillance and security",
+    id: "security-system",
+    name: "Security System",
+    description: "Video surveillance and access control",
     icon: unifiProtectIcon,
     accentColor: "hsl(217, 91%, 60%)",
-    url: "https://protect.ui.com",
+    url: "https://security.example.local:7443",
     networkCheckEnabled: true,
     specification: {
       category: "Security & Surveillance",
-      vendor: "Ubiquiti",
+      vendor: "SecureTech",
       type: "Web Application",
       protocol: "HTTPS"
     }
   },
   {
-    id: "homeassistant",
-    name: "Home Assistant",
-    description: "Smart home automation platform",
+    id: "smart-home",
+    name: "Smart Home Hub",
+    description: "Home automation and IoT control",
     icon: homeassistantIcon,
     accentColor: "hsl(199, 89%, 48%)",
-    url: "https://home-assistant.io",
+    url: "http://smarthome.example.local:8123",
     networkCheckEnabled: true,
     specification: {
       category: "Home Automation",
-      vendor: "Home Assistant",
+      vendor: "HomeOS",
       type: "Web Application",
-      protocol: "HTTPS"
+      protocol: "HTTP"
     }
   },
   {
-    id: "synology",
-    name: "Synology",
-    description: "Network-attached storage management",
+    id: "file-server",
+    name: "File Server",
+    description: "Network storage and file sharing",
     icon: synologyIcon,
     accentColor: "hsl(25, 95%, 53%)",
-    url: "https://synology.com",
+    url: "https://files.example.local:5001",
     networkCheckEnabled: true,
     specification: {
       category: "Storage & NAS",
-      vendor: "Synology",
+      vendor: "StorageTech",
       type: "Web Application",
       protocol: "HTTPS"
     }
   },
   {
-    id: "plex",
-    name: "Plex",
-    description: "Media streaming and entertainment",
+    id: "media-server",
+    name: "Media Server",
+    description: "Video and music streaming platform",
     icon: plexIcon,
     accentColor: "hsl(45, 93%, 58%)",
-    url: "https://plex.tv",
+    url: "http://media.example.local:32400",
     networkCheckEnabled: true,
     specification: {
       category: "Media & Entertainment",
-      vendor: "Plex Inc.",
+      vendor: "MediaStream Inc.",
       type: "Media Server",
-      protocol: "HTTPS"
+      protocol: "HTTP"
     }
   },
   {
-    id: "paperless",
-    name: "Paperless",
-    description: "Document management system",
+    id: "document-manager",
+    name: "Document Manager",
+    description: "Digital document organization",
     icon: paperlessIcon,
     accentColor: "hsl(142, 76%, 36%)",
-    url: "https://paperless-ngx.readthedocs.io",
+    url: "http://docs.example.local:8000",
     networkCheckEnabled: true,
     specification: {
       category: "Document Management",
-      vendor: "Paperless-NGX",
+      vendor: "DocuFlow",
       type: "Web Application",
-      protocol: "HTTPS"
+      protocol: "HTTP"
     }
   }
 ];
