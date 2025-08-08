@@ -582,7 +582,7 @@ const NetworkDashboard = () => {
                        {/* Network check toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
                              <div className="flex items-center gap-2">
                                <Wifi className="h-4 w-4 text-muted-foreground" />
                                <span className="text-sm text-muted-foreground">Network Check</span>
@@ -601,7 +601,7 @@ const NetworkDashboard = () => {
                        {/* Local HTTP toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
                              <div className="flex items-center gap-2">
                                <Server className="h-4 w-4 text-muted-foreground" />
                                <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
@@ -620,7 +620,7 @@ const NetworkDashboard = () => {
                        {/* Theme toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
                              <div className="flex items-center gap-2">
                                <span className="text-sm text-muted-foreground">Theme</span>
                              </div>
@@ -638,7 +638,7 @@ const NetworkDashboard = () => {
                        {/* Network check toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
                              <div className="flex items-center gap-2">
                                <Wifi className="h-4 w-4 text-muted-foreground" />
                                <span className="text-sm text-muted-foreground">Network Check</span>
@@ -657,7 +657,7 @@ const NetworkDashboard = () => {
                        {/* Theme toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
                              <div className="flex items-center gap-2">
                                <span className="text-sm text-muted-foreground">Theme</span>
                              </div>
@@ -672,7 +672,7 @@ const NetworkDashboard = () => {
                        {/* Local HTTP toggle */}
                        <Tooltip>
                          <TooltipTrigger asChild>
-                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg w-full max-w-[480px]">
                              <div className="flex items-center gap-2">
                                <Server className="h-4 w-4 text-muted-foreground" />
                                <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
