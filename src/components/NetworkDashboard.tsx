@@ -347,165 +347,114 @@ const NetworkDashboard = () => {
     <div className="min-h-screen bg-gradient-bg">
       <div className="container mx-auto px-6 py-8">
         <header className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-card rounded-xl border border-border shadow-card">
-                <Server className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                {/* Editable Title */}
-                {isEditMode && isEditingTitle ? (
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={tempTitle}
-                      onChange={(e) => setTempTitle(e.target.value)}
-                      className="text-3xl font-bold bg-transparent border-primary/50 focus:border-primary"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSaveTitle();
-                        if (e.key === 'Escape') handleCancelTitleEdit();
-                      }}
-                      autoFocus
-                    />
-                    <Button size="sm" variant="ghost" onClick={handleSaveTitle}>
-                      <Check className="h-4 w-4 text-accent" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={handleCancelTitleEdit}>
-                      <X className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                ) : (
-                  <h1 
-                    className={cn(
-                      "text-3xl font-bold text-foreground",
-                      isEditMode && "cursor-pointer hover:text-primary transition-colors"
-                    )}
-                    onClick={isEditMode ? handleStartEditTitle : undefined}
-                  >
-                    {dashboardConfig.title}
-                    {isEditMode && (
-                      <Edit className="inline ml-2 h-5 w-5 text-muted-foreground" />
-                    )}
-                  </h1>
-                )}
-
-                {/* Editable Subtitle */}
-                {isEditMode && isEditingSubtitle ? (
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input
-                      value={tempSubtitle}
-                      onChange={(e) => setTempSubtitle(e.target.value)}
-                      className="text-base bg-transparent border-primary/50 focus:border-primary"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSaveSubtitle();
-                        if (e.key === 'Escape') handleCancelSubtitleEdit();
-                      }}
-                      autoFocus
-                    />
-                    <Button size="sm" variant="ghost" onClick={handleSaveSubtitle}>
-                      <Check className="h-4 w-4 text-accent" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={handleCancelSubtitleEdit}>
-                      <X className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                ) : (
-                  <p 
-                    className={cn(
-                      "text-muted-foreground",
-                      isEditMode && "cursor-pointer hover:text-primary transition-colors"
-                    )}
-                    onClick={isEditMode ? handleStartEditSubtitle : undefined}
-                  >
-                    {dashboardConfig.subtitle}
-                    {isEditMode && (
-                      <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
-                    )}
-                  </p>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                {dashboardConfig.networkCheckEnabled && (
-                  <div className="flex items-center gap-2">
-                    <Activity 
+          <div className="flex flex-col gap-4 mb-6">
+            {/* Main header content */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-card rounded-xl border border-border shadow-card">
+                  <Server className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  {/* Editable Title */}
+                  {isEditMode && isEditingTitle ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={tempTitle}
+                        onChange={(e) => setTempTitle(e.target.value)}
+                        className="text-3xl font-bold bg-transparent border-primary/50 focus:border-primary"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveTitle();
+                          if (e.key === 'Escape') handleCancelTitleEdit();
+                        }}
+                        autoFocus
+                      />
+                      <Button size="sm" variant="ghost" onClick={handleSaveTitle}>
+                        <Check className="h-4 w-4 text-accent" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={handleCancelTitleEdit}>
+                        <X className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <h1 
                       className={cn(
-                        "h-4 w-4", 
-                        isOnline 
-                          ? "text-green-500 animate-pulse" 
-                          : "text-red-500 animate-[blink_1s_linear_infinite]"
-                      )} 
-                    />
-                    <span className={isOnline ? "text-green-500" : "text-red-500"}>
-                      {isOnline ? "Online" : "Offline"}
-                    </span>
-                    {lastPingTime && isOnline && (
-                      <span className="text-xs text-muted-foreground/70">
-                        • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div className="font-mono">
-                  {currentTime}
+                        "text-3xl font-bold text-foreground",
+                        isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                      )}
+                      onClick={isEditMode ? handleStartEditTitle : undefined}
+                    >
+                      {dashboardConfig.title}
+                      {isEditMode && (
+                        <Edit className="inline ml-2 h-5 w-5 text-muted-foreground" />
+                      )}
+                    </h1>
+                  )}
+
+                  {/* Editable Subtitle */}
+                  {isEditMode && isEditingSubtitle ? (
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        value={tempSubtitle}
+                        onChange={(e) => setTempSubtitle(e.target.value)}
+                        className="text-base bg-transparent border-primary/50 focus:border-primary"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveSubtitle();
+                          if (e.key === 'Escape') handleCancelSubtitleEdit();
+                        }}
+                        autoFocus
+                      />
+                      <Button size="sm" variant="ghost" onClick={handleSaveSubtitle}>
+                        <Check className="h-4 w-4 text-accent" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={handleCancelSubtitleEdit}>
+                        <X className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <p 
+                      className={cn(
+                        "text-muted-foreground",
+                        isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                      )}
+                      onClick={isEditMode ? handleStartEditSubtitle : undefined}
+                    >
+                      {dashboardConfig.subtitle}
+                      {isEditMode && (
+                        <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
+                      )}
+                    </p>
+                  )}
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                {isEditMode && (
-                  <>
-                    {/* Network Check - visible on larger screens */}
-                    <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
-                      <Wifi className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Network Check</span>
-                      <Switch 
-                        checked={dashboardConfig.networkCheckEnabled}
-                        onCheckedChange={toggleNetworkCheck}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  {dashboardConfig.networkCheckEnabled && (
+                    <div className="flex items-center gap-2">
+                      <Activity 
+                        className={cn(
+                          "h-4 w-4", 
+                          isOnline 
+                            ? "text-green-500 animate-pulse" 
+                            : "text-red-500 animate-[blink_1s_linear_infinite]"
+                        )} 
                       />
+                      <span className={isOnline ? "text-green-500" : "text-red-500"}>
+                        {isOnline ? "Online" : "Offline"}
+                      </span>
+                      {lastPingTime && isOnline && (
+                        <span className="text-xs text-muted-foreground/70">
+                          • Last check: {lastPingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
                     </div>
-                    
-                    {/* Action buttons - responsive layout */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleExportConfig}
-                        className="flex items-center gap-2"
-                      >
-                        <Download className="h-4 w-4" />
-                        <span className="hidden sm:inline">Export</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleImportConfig}
-                        className="flex items-center gap-2"
-                      >
-                        <Upload className="h-4 w-4" />
-                        <span className="hidden sm:inline">Import</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowAddDialog(true)}
-                        className="flex items-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span className="hidden sm:inline">Add App</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleResetApps}
-                        className="flex items-center gap-2"
-                      >
-                        <RotateCcw className="h-4 w-4" />
-                        <span className="hidden sm:inline">Reset</span>
-                      </Button>
-                    </div>
-                  </>
-                )}
+                  )}
+                  <div className="font-mono">
+                    {currentTime}
+                  </div>
+                </div>
+                
+                {/* Main Edit/Done button - always visible */}
                 <Button
                   variant={isEditMode ? "default" : "outline"}
                   size="sm"
@@ -526,31 +475,73 @@ const NetworkDashboard = () => {
                 </Button>
               </div>
             </div>
-          </div>
 
-          {/* Status indicators and mobile network settings */}
-          {isEditMode && (
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
-                <Edit className="w-4 h-4 text-accent" />
-                <span className="text-sm text-accent font-medium">
-                  Edit Mode - Click apps to modify • Click title/subtitle to edit
-                </span>
-              </div>
-              
-              {/* Mobile network check toggle */}
-              <div className="lg:hidden">
-                <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg w-fit">
-                  <Wifi className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Network Check</span>
-                  <Switch 
-                    checked={dashboardConfig.networkCheckEnabled}
-                    onCheckedChange={toggleNetworkCheck}
-                  />
+            {/* Edit mode controls - mobile-friendly */}
+            {isEditMode && (
+              <div className="space-y-3">
+                {/* Edit mode indicator */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-lg">
+                  <Edit className="w-4 h-4 text-accent" />
+                  <span className="text-sm text-accent font-medium">
+                    Edit Mode - Click apps to modify • Click title/subtitle to edit
+                  </span>
+                </div>
+                
+                {/* Control buttons - responsive grid */}
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                  {/* Network check toggle */}
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
+                    <Wifi className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Network Check</span>
+                    <Switch 
+                      checked={dashboardConfig.networkCheckEnabled}
+                      onCheckedChange={toggleNetworkCheck}
+                    />
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportConfig}
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-4 w-4" />
+                      Export
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleImportConfig}
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Import
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAddDialog(true)}
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add App
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResetApps}
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Reset All
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </header>
 
         {/* Apps Grid */}
