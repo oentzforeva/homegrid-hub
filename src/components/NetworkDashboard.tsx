@@ -411,23 +411,23 @@ const NetworkDashboard = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3">
-                      <p 
-                        className={cn(
-                          "text-muted-foreground",
-                          isEditMode && "cursor-pointer hover:text-primary transition-colors"
-                        )}
-                        onClick={isEditMode ? handleStartEditSubtitle : undefined}
-                      >
+                    <p 
+                      className={cn(
+                        "text-muted-foreground flex items-center gap-3",
+                        isEditMode && "cursor-pointer hover:text-primary transition-colors"
+                      )}
+                      onClick={isEditMode ? handleStartEditSubtitle : undefined}
+                    >
+                      <span>
                         {dashboardConfig.subtitle}
                         {isEditMode && (
                           <Edit className="inline ml-2 h-4 w-4 text-muted-foreground" />
                         )}
-                      </p>
-                      <div className="text-sm font-mono text-muted-foreground/70">
+                      </span>
+                      <span className="text-muted-foreground/70">
                         {currentTime}
-                      </div>
-                    </div>
+                      </span>
+                    </p>
                   )}
                 </div>
               </div>
