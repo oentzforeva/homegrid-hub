@@ -574,184 +574,190 @@ const NetworkDashboard = () => {
                 </div>
                 
                  {/* Control buttons - responsive layout */}
-                 <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                   {/* Mobile layout - all toggles in column */}
-                   <div className="flex flex-col gap-3 sm:hidden">
-                     {/* Network check toggle */}
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
-                           <div className="flex items-center gap-2">
-                             <Wifi className="h-4 w-4 text-muted-foreground" />
-                             <span className="text-sm text-muted-foreground">Network Check</span>
+                 <div className="space-y-3">
+                   {/* First row: Toggle controls */}
+                   <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                     {/* Mobile layout - all toggles in column */}
+                     <div className="flex flex-col gap-3 sm:hidden">
+                       {/* Network check toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                             <div className="flex items-center gap-2">
+                               <Wifi className="h-4 w-4 text-muted-foreground" />
+                               <span className="text-sm text-muted-foreground">Network Check</span>
+                             </div>
+                             <Switch 
+                               checked={dashboardConfig.networkCheckEnabled}
+                               onCheckedChange={toggleNetworkCheck}
+                             />
                            </div>
-                           <Switch 
-                             checked={dashboardConfig.networkCheckEnabled}
-                             onCheckedChange={toggleNetworkCheck}
-                           />
-                         </div>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Enable/disable connectivity monitoring for apps</p>
-                       </TooltipContent>
-                     </Tooltip>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Enable/disable connectivity monitoring for apps</p>
+                         </TooltipContent>
+                       </Tooltip>
 
-                     {/* Local HTTP toggle */}
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
-                           <div className="flex items-center gap-2">
-                             <Server className="h-4 w-4 text-muted-foreground" />
-                             <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                       {/* Local HTTP toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                             <div className="flex items-center gap-2">
+                               <Server className="h-4 w-4 text-muted-foreground" />
+                               <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                             </div>
+                             <Switch 
+                               checked={dashboardConfig.assumeLocalHttpOnline ?? false}
+                               onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
+                             />
                            </div>
-                           <Switch 
-                             checked={dashboardConfig.assumeLocalHttpOnline ?? false}
-                             onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
-                           />
-                         </div>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
-                       </TooltipContent>
-                     </Tooltip>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                         </TooltipContent>
+                       </Tooltip>
 
-                     {/* Theme toggle */}
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
-                           <div className="flex items-center gap-2">
-                             <span className="text-sm text-muted-foreground">Theme</span>
+                       {/* Theme toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                             <div className="flex items-center gap-2">
+                               <span className="text-sm text-muted-foreground">Theme</span>
+                             </div>
+                             <ThemeToggle />
                            </div>
-                           <ThemeToggle />
-                         </div>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Switch between light and dark mode</p>
-                       </TooltipContent>
-                     </Tooltip>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Switch between light and dark mode</p>
+                         </TooltipContent>
+                       </Tooltip>
+                     </div>
+                     
+                     {/* Desktop/Tablet layout - all toggles in one column */}
+                     <div className="hidden sm:flex flex-col gap-3">
+                       {/* Network check toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                             <div className="flex items-center gap-2">
+                               <Wifi className="h-4 w-4 text-muted-foreground" />
+                               <span className="text-sm text-muted-foreground">Network Check</span>
+                             </div>
+                             <Switch 
+                               checked={dashboardConfig.networkCheckEnabled}
+                               onCheckedChange={toggleNetworkCheck}
+                             />
+                           </div>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Enable/disable connectivity monitoring for apps</p>
+                         </TooltipContent>
+                       </Tooltip>
+
+                       {/* Theme toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                             <div className="flex items-center gap-2">
+                               <span className="text-sm text-muted-foreground">Theme</span>
+                             </div>
+                             <ThemeToggle />
+                           </div>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Switch between light and dark mode</p>
+                         </TooltipContent>
+                       </Tooltip>
+
+                       {/* Local HTTP toggle */}
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
+                             <div className="flex items-center gap-2">
+                               <Server className="h-4 w-4 text-muted-foreground" />
+                               <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
+                             </div>
+                             <Switch 
+                               checked={dashboardConfig.assumeLocalHttpOnline ?? false}
+                               onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
+                             />
+                           </div>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
+                         </TooltipContent>
+                       </Tooltip>
+                     </div>
                    </div>
                    
-                   {/* Desktop/Tablet layout - all toggles in one column */}
-                   <div className="hidden sm:flex flex-col gap-3">
-                     {/* Network check toggle */}
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
-                           <div className="flex items-center gap-2">
-                             <Wifi className="h-4 w-4 text-muted-foreground" />
-                             <span className="text-sm text-muted-foreground">Network Check</span>
-                           </div>
-                           <Switch 
-                             checked={dashboardConfig.networkCheckEnabled}
-                             onCheckedChange={toggleNetworkCheck}
-                           />
-                         </div>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Enable/disable connectivity monitoring for apps</p>
-                       </TooltipContent>
-                     </Tooltip>
-
-                     {/* Theme toggle */}
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
-                           <div className="flex items-center gap-2">
-                             <span className="text-sm text-muted-foreground">Theme</span>
-                           </div>
-                           <ThemeToggle />
-                         </div>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Switch between light and dark mode</p>
-                       </TooltipContent>
-                     </Tooltip>
-
-                     {/* Local HTTP toggle */}
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <div className="flex items-center justify-between gap-2 px-3 py-2 bg-card border border-border rounded-lg min-w-[280px]">
-                           <div className="flex items-center gap-2">
-                             <Server className="h-4 w-4 text-muted-foreground" />
-                             <span className="text-sm text-muted-foreground">Assume Local HTTP Online</span>
-                           </div>
-                           <Switch 
-                             checked={dashboardConfig.assumeLocalHttpOnline ?? false}
-                             onCheckedChange={(enabled) => updateDashboardConfig({ assumeLocalHttpOnline: enabled })}
-                           />
-                         </div>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Treat local HTTP services as online when HTTPS blocks mixed content</p>
-                       </TooltipContent>
-                     </Tooltip>
+                   {/* Second row: Action buttons and Done button */}
+                   <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center sm:justify-between">
+                     {/* Action buttons */}
+                     <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={handleExportConfig}
+                             className="flex items-center justify-center gap-2"
+                           >
+                             <Download className="h-4 w-4" />
+                             Export
+                           </Button>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Export dashboard config as JSON file</p>
+                         </TooltipContent>
+                       </Tooltip>
+                       <Tooltip>
+                         <TooltipTrigger asChild>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={handleImportConfig}
+                             className="flex items-center justify-center gap-2"
+                           >
+                             <Upload className="h-4 w-4" />
+                             Import
+                           </Button>
+                         </TooltipTrigger>
+                         <TooltipContent>
+                           <p>Import dashboard config from JSON file</p>
+                         </TooltipContent>
+                       </Tooltip>
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         onClick={() => setShowAddDialog(true)}
+                         className="flex items-center justify-center gap-2"
+                       >
+                         <Plus className="h-4 w-4" />
+                         Add App
+                       </Button>
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         onClick={handleResetApps}
+                         className="flex items-center justify-center gap-2"
+                       >
+                         <RotateCcw className="h-4 w-4" />
+                         Reset All
+                       </Button>
+                     </div>
+                     
+                     {/* Done button - separate section for better positioning */}
+                     <Button
+                       variant="default"
+                       size="sm"
+                       onClick={toggleEditMode}
+                       className="flex items-center justify-center gap-2 w-full sm:w-auto sm:ml-auto"
+                     >
+                       <Save className="h-4 w-4" />
+                       Done
+                     </Button>
                    </div>
-                  
-                   {/* Action buttons */}
-                   <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           onClick={handleExportConfig}
-                           className="flex items-center justify-center gap-2"
-                         >
-                           <Download className="h-4 w-4" />
-                           Export
-                         </Button>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Export dashboard config as JSON file</p>
-                       </TooltipContent>
-                     </Tooltip>
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           onClick={handleImportConfig}
-                           className="flex items-center justify-center gap-2"
-                         >
-                           <Upload className="h-4 w-4" />
-                           Import
-                         </Button>
-                       </TooltipTrigger>
-                       <TooltipContent>
-                         <p>Import dashboard config from JSON file</p>
-                       </TooltipContent>
-                     </Tooltip>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAddDialog(true)}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add App
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleResetApps}
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                      Reset All
-                    </Button>
-                  </div>
-                  
-                  {/* Done button - separate on mobile for better UX */}
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={toggleEditMode}
-                    className="flex items-center justify-center gap-2 w-full sm:w-auto"
-                  >
-                    <Save className="h-4 w-4" />
-                    Done
-                  </Button>
-                </div>
+                 </div>
               </div>
             )}
           </div>
